@@ -7,64 +7,45 @@ interface ConversationViewProps {
 
 export function ConversationView({ messages }: ConversationViewProps) {
   return (
-    <div className="space-y-3">
-      {messages.map((message, index) => (
-        <div
-          key={index}
-          className={`flex ${
-            message.role === "agent" ? "justify-start" : "justify-end"
-          } animate-fade-in`}
-          style={{ animationDelay: `${index * 0.05}s` }}
-        >
+    <div className="space-y-4 p-4 sm:p-5">
+      {messages.map((message, index) => {
+        const isAgent = message.role === "agent";
+        return (
           <div
-            className={`max-w-[85%] sm:max-w-[75%] ${
-              message.role === "agent" ? "order-1" : "order-1"
-            }`}
+            key={index}
+            className={`flex ${isAgent ? "justify-start" : "justify-end"}`}
           >
-            {/* Role label */}
-            <div
-              className={`mb-1 flex items-center gap-1.5 ${
-                message.role === "agent" ? "justify-start" : "justify-end"
-              }`}
-            >
+            <div className={`max-w-[80%] sm:max-w-[72%]`}>
               <div
-                className={`flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold ${
-                  message.role === "agent"
-                    ? "bg-primary/20 text-primary"
-                    : "bg-success/20 text-success"
+                className={`flex items-baseline gap-2 mb-1 ${
+                  isAgent ? "justify-start" : "justify-end"
                 }`}
               >
-                {message.role === "agent" ? "A" : "U"}
+                <span
+                  className={`text-[11px] font-medium uppercase tracking-wider ${
+                    isAgent ? "text-agent" : "text-user"
+                  }`}
+                >
+                  {isAgent ? "Agent" : "User"}
+                </span>
+                <span className="text-[10px] text-muted-foreground/60 font-mono tabular-nums">
+                  {formatTimestamp(message.timestamp)}
+                </span>
               </div>
-              <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
-                {message.role === "agent" ? "Agent" : "User"}
-              </span>
-            </div>
 
-            {/* Bubble */}
-            <div
-              className={`rounded-2xl px-4 py-3 text-sm leading-relaxed border ${
-                message.role === "agent"
-                  ? "bg-agent-bubble border-agent-bubble-border rounded-tl-md"
-                  : "bg-user-bubble border-user-bubble-border rounded-tr-md"
-              }`}
-            >
-              <p className="whitespace-pre-wrap break-words">{message.content}</p>
-            </div>
-
-            {/* Timestamp */}
-            <div
-              className={`mt-1 flex ${
-                message.role === "agent" ? "justify-start" : "justify-end"
-              }`}
-            >
-              <span className="text-[10px] text-muted-foreground font-mono">
-                {formatTimestamp(message.timestamp)}
-              </span>
+              <div
+                className={`px-3.5 py-2.5 text-sm leading-relaxed border ${
+                  isAgent
+                    ? "bg-agent-bg border-agent-border"
+                    : "bg-user-bg border-user-border"
+                }`}
+              >
+                <p className="whitespace-pre-wrap break-words">{message.content}</p>
+              </div>
             </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

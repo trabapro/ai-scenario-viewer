@@ -6,20 +6,28 @@ import sharp from "sharp";
 
 const PUBLIC_DIR = path.resolve(import.meta.dirname, "..", "public");
 
+// ── Traba Brand Colors ──────────────────────────────────────────────
+const BRAND = {
+  Violet: "#8000FF",
+  TrabaBlue: "#8893FF",
+  MidnightBlue: "#08105E",
+  White: "#FFFFFF",
+  Violet10: "#F5EBFF",
+  Violet40: "#B366FF",
+  Grey90: "#2B333B",
+};
+
 // ── Helpers ──────────────────────────────────────────────────────────
 
 async function fetchFont(
   weight: number
 ): Promise<{ name: string; data: ArrayBuffer; weight: number; style: string }> {
-  // Use a non-browser User-Agent so Google Fonts returns TTF (not woff2).
-  // Satori's opentype.js parser only supports TTF/OTF, not woff2.
   const url = `https://fonts.googleapis.com/css2?family=Inter:wght@${weight}&display=swap`;
   const cssRes = await fetch(url, {
     headers: { "User-Agent": "node" },
   });
   const css = await cssRes.text();
 
-  // Extract the TTF URL from the CSS
   const match = css.match(/src:\s*url\(([^)]+)\)/);
   if (!match) throw new Error(`Could not find font URL for weight ${weight}`);
 
@@ -36,13 +44,11 @@ function svgToPng(svg: string, width: number, height: number): Buffer {
   return pngData.asPng();
 }
 
-// ── Beaker icon path (used in both OG image and favicon) ─────────
-
-// A simple laboratory beaker / flask SVG path
-const BEAKER_PATH =
-  "M8 2V1a1 1 0 0 1 2 0v1h2V1a1 1 0 0 1 2 0v1h1a1 1 0 0 1 1 1v2a1 1 0 0 1-.293.707L12 9.414V14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9.414L1.293 6.707A1 1 0 0 1 1 6V3a1 1 0 0 1 1-2h6z";
-
 // ── OG Image Generator (1200x630) ───────────────────────────────
+// Design: Bold split layout. Left side is a thick Violet vertical band.
+// Right side has white background with oversized bold typography.
+// "TRABA" wordmark at top, massive "AI Scenario Tests" hero text.
+// Clean, premium, high-impact.
 
 async function generateOGImage(
   fonts: Awaited<ReturnType<typeof fetchFont>>[]
@@ -55,177 +61,127 @@ async function generateOGImage(
     props: {
       style: {
         display: "flex",
-        flexDirection: "column",
         width: "100%",
         height: "100%",
-        backgroundColor: "#0a0a0a",
+        backgroundColor: BRAND.White,
         fontFamily: "Inter",
         position: "relative",
         overflow: "hidden",
       },
       children: [
-        // Background gradient overlay
-        {
-          type: "div",
-          props: {
-            style: {
-              position: "absolute",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              background:
-                "radial-gradient(ellipse 80% 60% at 20% 40%, rgba(59,130,246,0.12) 0%, transparent 60%), radial-gradient(ellipse 60% 50% at 80% 70%, rgba(139,92,246,0.08) 0%, transparent 50%)",
-              display: "flex",
-            },
-          },
-        },
-        // Dot grid texture
-        {
-          type: "div",
-          props: {
-            style: {
-              position: "absolute",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundImage:
-                "radial-gradient(circle, rgba(255,255,255,0.03) 1px, transparent 1px)",
-              backgroundSize: "24px 24px",
-              display: "flex",
-            },
-          },
-        },
-        // Main content
+        // Left: bold violet band
         {
           type: "div",
           props: {
             style: {
               display: "flex",
               flexDirection: "column",
-              padding: "60px 72px",
-              position: "relative",
-              zIndex: 1,
+              width: "100px",
+              height: "100%",
+              backgroundColor: BRAND.Violet,
+              flexShrink: 0,
+            },
+          },
+        },
+        // Main content area
+        {
+          type: "div",
+          props: {
+            style: {
+              display: "flex",
+              flexDirection: "column",
               flex: 1,
+              padding: "60px 72px 60px 64px",
+              position: "relative",
             },
             children: [
-              // Top row: beaker icon
+              // Top: TRABA wordmark
               {
                 type: "div",
                 props: {
                   style: {
                     display: "flex",
                     alignItems: "center",
-                    gap: "16px",
-                    marginBottom: "40px",
+                    gap: "12px",
+                    marginBottom: "24px",
                   },
                   children: [
-                    // Beaker container with glow
+                    // Violet dot accent
                     {
                       type: "div",
                       props: {
                         style: {
                           display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          width: "56px",
-                          height: "56px",
-                          borderRadius: "14px",
-                          backgroundColor: "rgba(59,130,246,0.15)",
-                          border: "1px solid rgba(59,130,246,0.3)",
-                          boxShadow:
-                            "0 0 24px rgba(59,130,246,0.2), 0 0 48px rgba(59,130,246,0.1)",
+                          width: "14px",
+                          height: "14px",
+                          borderRadius: "7px",
+                          backgroundColor: BRAND.Violet,
                         },
-                        children: [
-                          {
-                            type: "svg",
-                            props: {
-                              width: 28,
-                              height: 28,
-                              viewBox: "0 0 24 24",
-                              fill: "none",
-                              stroke: "#3b82f6",
-                              strokeWidth: "2",
-                              strokeLinecap: "round",
-                              strokeLinejoin: "round",
-                              style: { display: "flex" },
-                              children: [
-                                // Flask body
-                                {
-                                  type: "path",
-                                  props: {
-                                    d: "M9 3h6V8.5l4.5 7.5a2 2 0 0 1-1.72 3H6.22a2 2 0 0 1-1.72-3L9 8.5V3z",
-                                  },
-                                },
-                                // Liquid line
-                                {
-                                  type: "path",
-                                  props: {
-                                    d: "M6.5 15h11",
-                                  },
-                                },
-                                // Top cap
-                                {
-                                  type: "path",
-                                  props: {
-                                    d: "M8 3h8",
-                                  },
-                                },
-                              ],
-                            },
-                          },
-                        ],
+                      },
+                    },
+                    {
+                      type: "div",
+                      props: {
+                        style: {
+                          display: "flex",
+                          fontSize: "24px",
+                          fontWeight: 800,
+                          color: BRAND.Violet,
+                          letterSpacing: "0.14em",
+                          textTransform: "uppercase",
+                        },
+                        children: "Traba",
                       },
                     },
                   ],
                 },
               },
-              // Subtitle: "Traba"
+              // Spacer to push title to vertical center
               {
                 type: "div",
                 props: {
-                  style: {
-                    display: "flex",
-                    fontSize: "22px",
-                    fontWeight: 600,
-                    color: "rgba(139,92,246,0.8)",
-                    letterSpacing: "0.08em",
-                    textTransform: "uppercase",
-                    marginBottom: "12px",
-                  },
-                  children: "Traba",
+                  style: { display: "flex", flex: 1 },
                 },
               },
-              // Main title
+              // Hero text: AI Scenario Tests -- MASSIVE and BOLD
               {
                 type: "div",
                 props: {
                   style: {
                     display: "flex",
-                    fontSize: "56px",
-                    fontWeight: 700,
-                    color: "#ffffff",
-                    lineHeight: 1.15,
-                    letterSpacing: "-0.025em",
+                    flexDirection: "column",
+                    gap: "0px",
                   },
-                  children: "AI Scenario Tests",
-                },
-              },
-              // Description
-              {
-                type: "div",
-                props: {
-                  style: {
-                    display: "flex",
-                    fontSize: "20px",
-                    fontWeight: 400,
-                    color: "rgba(255,255,255,0.5)",
-                    marginTop: "16px",
-                    lineHeight: 1.5,
-                  },
-                  children:
-                    "Visualize and compare AI scenario test results across environments",
+                  children: [
+                    {
+                      type: "div",
+                      props: {
+                        style: {
+                          display: "flex",
+                          fontSize: "96px",
+                          fontWeight: 900,
+                          color: BRAND.MidnightBlue,
+                          lineHeight: 1.0,
+                          letterSpacing: "-0.04em",
+                        },
+                        children: "AI Scenario",
+                      },
+                    },
+                    {
+                      type: "div",
+                      props: {
+                        style: {
+                          display: "flex",
+                          fontSize: "96px",
+                          fontWeight: 900,
+                          color: BRAND.Violet,
+                          lineHeight: 1.0,
+                          letterSpacing: "-0.04em",
+                        },
+                        children: "Tests",
+                      },
+                    },
+                  ],
                 },
               },
               // Spacer
@@ -235,22 +191,70 @@ async function generateOGImage(
                   style: { display: "flex", flex: 1 },
                 },
               },
-              // Bottom stat cards
+              // Bottom: subtle tagline
               {
                 type: "div",
                 props: {
                   style: {
                     display: "flex",
-                    gap: "20px",
+                    fontSize: "20px",
+                    fontWeight: 500,
+                    color: "#7A8A99",
+                    letterSpacing: "0.01em",
                   },
-                  children: [
-                    createStatCard("Scenarios", "24", "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"),
-                    createStatCard("Criteria", "156", "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"),
-                    createStatCard("Pass Rate", "94.2%", "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"),
-                  ],
+                  children: "Visualize & compare test results across environments",
                 },
               },
             ],
+          },
+        },
+        // Right edge: decorative TrabaBlue accent stripe
+        {
+          type: "div",
+          props: {
+            style: {
+              display: "flex",
+              position: "absolute",
+              top: 0,
+              right: 0,
+              width: "12px",
+              height: "100%",
+              backgroundColor: BRAND.TrabaBlue,
+            },
+          },
+        },
+        // Decorative: large faded violet circle in bottom-right
+        {
+          type: "div",
+          props: {
+            style: {
+              display: "flex",
+              position: "absolute",
+              bottom: "-120px",
+              right: "-60px",
+              width: "380px",
+              height: "380px",
+              borderRadius: "190px",
+              backgroundColor: BRAND.Violet10,
+              opacity: 0.6,
+            },
+          },
+        },
+        // Decorative: smaller accent circle
+        {
+          type: "div",
+          props: {
+            style: {
+              display: "flex",
+              position: "absolute",
+              top: "40px",
+              right: "60px",
+              width: "80px",
+              height: "80px",
+              borderRadius: "40px",
+              border: `4px solid ${BRAND.Violet40}`,
+              opacity: 0.3,
+            },
           },
         },
       ],
@@ -269,92 +273,14 @@ async function generateOGImage(
   console.log(`  Generated ${outPath} (${(png.length / 1024).toFixed(1)} KB)`);
 }
 
-function createStatCard(label: string, value: string, iconPath: string) {
-  return {
-    type: "div",
-    props: {
-      style: {
-        display: "flex",
-        flexDirection: "column",
-        padding: "20px 28px",
-        backgroundColor: "rgba(255,255,255,0.04)",
-        border: "1px solid rgba(255,255,255,0.08)",
-        borderRadius: "12px",
-        minWidth: "180px",
-        gap: "8px",
-      },
-      children: [
-        // Icon + label row
-        {
-          type: "div",
-          props: {
-            style: {
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-            },
-            children: [
-              {
-                type: "svg",
-                props: {
-                  width: 16,
-                  height: 16,
-                  viewBox: "0 0 24 24",
-                  fill: "none",
-                  stroke: "rgba(255,255,255,0.4)",
-                  strokeWidth: "2",
-                  strokeLinecap: "round",
-                  strokeLinejoin: "round",
-                  style: { display: "flex" },
-                  children: [
-                    {
-                      type: "path",
-                      props: { d: iconPath },
-                    },
-                  ],
-                },
-              },
-              {
-                type: "div",
-                props: {
-                  style: {
-                    display: "flex",
-                    fontSize: "14px",
-                    fontWeight: 500,
-                    color: "rgba(255,255,255,0.45)",
-                    letterSpacing: "0.02em",
-                  },
-                  children: label,
-                },
-              },
-            ],
-          },
-        },
-        // Value
-        {
-          type: "div",
-          props: {
-            style: {
-              display: "flex",
-              fontSize: "32px",
-              fontWeight: 700,
-              color: "#ffffff",
-              letterSpacing: "-0.02em",
-            },
-            children: value,
-          },
-        },
-      ],
-    },
-  };
-}
-
 // ── Favicon Generator ───────────────────────────────────────────
+// Design: Bold violet square with rounded corners, white "T" lettermark.
+// Instantly recognizable at any size.
 
 async function generateFavicons(
   fonts: Awaited<ReturnType<typeof fetchFont>>[]
 ): Promise<void> {
-  const size = 512; // Render at high res, then downscale
+  const size = 512;
 
   const element = {
     type: "div",
@@ -365,64 +291,23 @@ async function generateFavicons(
         justifyContent: "center",
         width: "100%",
         height: "100%",
-        backgroundColor: "#0a0a0a",
-        borderRadius: "96px", // Rounded corners at 512px
+        backgroundColor: BRAND.Violet,
+        borderRadius: "96px",
       },
       children: [
         {
-          type: "svg",
+          type: "div",
           props: {
-            width: 300,
-            height: 300,
-            viewBox: "0 0 24 24",
-            fill: "none",
-            stroke: "#3b82f6",
-            strokeWidth: "1.8",
-            strokeLinecap: "round",
-            strokeLinejoin: "round",
-            style: { display: "flex" },
-            children: [
-              // Flask body
-              {
-                type: "path",
-                props: {
-                  d: "M9 3h6V8.5l4.5 7.5a2 2 0 0 1-1.72 3H6.22a2 2 0 0 1-1.72-3L9 8.5V3z",
-                },
-              },
-              // Liquid line
-              {
-                type: "path",
-                props: {
-                  d: "M6.5 15h11",
-                },
-              },
-              // Top cap
-              {
-                type: "path",
-                props: {
-                  d: "M8 3h8",
-                },
-              },
-              // Bubbles
-              {
-                type: "circle",
-                props: {
-                  cx: "10",
-                  cy: "17",
-                  r: "0.5",
-                  fill: "#3b82f6",
-                },
-              },
-              {
-                type: "circle",
-                props: {
-                  cx: "13",
-                  cy: "16",
-                  r: "0.7",
-                  fill: "#3b82f6",
-                },
-              },
-            ],
+            style: {
+              display: "flex",
+              fontSize: "340px",
+              fontWeight: 900,
+              color: BRAND.White,
+              lineHeight: 1,
+              letterSpacing: "-0.03em",
+              marginTop: "-20px",
+            },
+            children: "T",
           },
         },
       ],
@@ -437,16 +322,10 @@ async function generateFavicons(
 
   const pngBuf = svgToPng(svg, size, size);
 
-  // Generate SVG favicon
+  // Generate SVG favicon -- bold violet square with white T
   const faviconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
-  <rect width="32" height="32" rx="6" fill="#0a0a0a"/>
-  <g transform="translate(4, 3) scale(1)" fill="none" stroke="#3b82f6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M9 3h6V8.5l4.5 7.5a2 2 0 0 1-1.72 3H6.22a2 2 0 0 1-1.72-3L9 8.5V3z"/>
-    <path d="M6.5 15h11"/>
-    <path d="M8 3h8"/>
-    <circle cx="10" cy="17" r="0.5" fill="#3b82f6"/>
-    <circle cx="13" cy="16" r="0.7" fill="#3b82f6"/>
-  </g>
+  <rect width="32" height="32" rx="6" fill="${BRAND.Violet}"/>
+  <text x="16" y="26" text-anchor="middle" font-family="Inter, Helvetica, Arial, sans-serif" font-weight="900" font-size="26" fill="${BRAND.White}">T</text>
 </svg>`;
 
   // Write SVG favicon
@@ -484,6 +363,8 @@ async function main(): Promise<void> {
     fetchFont(500),
     fetchFont(600),
     fetchFont(700),
+    fetchFont(800),
+    fetchFont(900),
   ]);
 
   console.log("\nGenerating OG image (1200x630)...");

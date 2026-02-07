@@ -16,12 +16,7 @@ interface LoadedRun {
 
 type ChangeStatus = "regressed" | "fixed" | "stable-pass" | "stable-fail" | "new" | "removed";
 
-// ---------------------------------------------------------------------------
-// Main CompareView
-// ---------------------------------------------------------------------------
-
 export function CompareView({ history, loadHistoryData }: CompareViewProps) {
-  // Default: all selected
   const [selectedIds, setSelectedIds] = useState<Set<string>>(
     () => new Set(history.map((h) => h.id))
   );
@@ -46,7 +41,6 @@ export function CompareView({ history, loadHistoryData }: CompareViewProps) {
     setSelectedIds(new Set());
   }, []);
 
-  // Load data for selected runs (sorted oldest -> newest by timestamp)
   const loadedRuns: LoadedRun[] = useMemo(() => {
     const runs: LoadedRun[] = [];
     for (const entry of history) {
@@ -56,7 +50,6 @@ export function CompareView({ history, loadHistoryData }: CompareViewProps) {
         runs.push({ entry, data });
       }
     }
-    // Sort oldest first (left to right on charts)
     runs.sort(
       (a, b) =>
         new Date(a.entry.timestamp).getTime() -
@@ -65,7 +58,6 @@ export function CompareView({ history, loadHistoryData }: CompareViewProps) {
     return runs;
   }, [history, selectedIds, loadHistoryData]);
 
-  // Compute stats per run
   const runStats = useMemo(() => {
     return loadedRuns.map((run) => {
       const total = run.data.summary?.total ?? run.data.results.length;
@@ -107,23 +99,11 @@ export function CompareView({ history, loadHistoryData }: CompareViewProps) {
         <div className="flex items-center gap-3">
           <Link
             to="/"
-            className="inline-flex items-center gap-1.5 rounded-lg border border-card-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 16 16"
-              fill="currentColor"
-              className="h-3.5 w-3.5"
-            >
-              <path
-                fillRule="evenodd"
-                d="M12 8a.75.75 0 01-.75.75H5.56l2.22 2.22a.75.75 0 11-1.06 1.06l-3.5-3.5a.75.75 0 010-1.06l3.5-3.5a.75.75 0 011.06 1.06L5.56 7.25h5.69A.75.75 0 0112 8z"
-                clipRule="evenodd"
-              />
-            </svg>
-            Back to Dashboard
+            &larr; Back
           </Link>
-          <h2 className="text-lg font-bold tracking-tight">Compare Runs</h2>
+          <h2 className="text-lg font-semibold tracking-tight">Compare Runs</h2>
         </div>
       </div>
 
@@ -144,10 +124,8 @@ export function CompareView({ history, loadHistoryData }: CompareViewProps) {
 
       {hasEnoughRuns && (
         <>
-          {/* Summary Delta Cards */}
           <SummaryDeltaCards runStats={runStats} />
 
-          {/* Time Series Charts */}
           <div className="mt-6 grid gap-4 lg:grid-cols-3">
             <TimeSeriesChart
               title="Scenario Pass Rate"
@@ -156,7 +134,7 @@ export function CompareView({ history, loadHistoryData }: CompareViewProps) {
                 label: runLabel(r.entry),
                 value: r.scenarioPassRate,
               }))}
-              color="var(--primary)"
+              color="var(--foreground)"
               min={0}
               max={100}
             />
@@ -178,25 +156,18 @@ export function CompareView({ history, loadHistoryData }: CompareViewProps) {
                 label: runLabel(r.entry),
                 value: r.duration,
               }))}
-              color="var(--primary-light)"
+              color="var(--muted-foreground)"
               formatValue={formatDuration}
             />
           </div>
 
-          {/* Scenario Diff Table */}
           <ScenarioDiffTable runStats={runStats} />
-
-          {/* Criteria Diff Table */}
           <CriteriaDiffTable runStats={runStats} />
         </>
       )}
     </div>
   );
 }
-
-// ---------------------------------------------------------------------------
-// Run label helper
-// ---------------------------------------------------------------------------
 
 function runLabel(entry: HistoryEntry): string {
   if (entry.filename) {
@@ -207,10 +178,6 @@ function runLabel(entry: HistoryEntry): string {
   const d = new Date(entry.timestamp);
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
-
-// ---------------------------------------------------------------------------
-// Run Selector
-// ---------------------------------------------------------------------------
 
 function RunSelector({
   history,
@@ -226,21 +193,21 @@ function RunSelector({
   onSelectNone: () => void;
 }) {
   return (
-    <div className="rounded-xl border border-card-border bg-card p-4">
+    <div className="border border-card-border bg-card p-4">
       <div className="flex items-center justify-between mb-3">
-        <span className="text-sm font-medium">Select Runs to Compare</span>
+        <span className="text-sm font-medium">Select Runs</span>
         <div className="flex gap-2">
           <button
             onClick={onSelectAll}
-            className="text-xs text-primary hover:underline"
+            className="text-xs text-foreground underline underline-offset-2 decoration-card-border hover:decoration-foreground"
           >
-            Select All
+            All
           </button>
           <button
             onClick={onSelectNone}
-            className="text-xs text-muted-foreground hover:underline"
+            className="text-xs text-muted-foreground hover:text-foreground"
           >
-            Clear
+            None
           </button>
         </div>
       </div>
@@ -251,27 +218,27 @@ function RunSelector({
             <button
               key={entry.id}
               onClick={() => onToggle(entry.id)}
-              className={`inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-xs font-medium transition-all ${
+              className={`inline-flex items-center gap-2 border px-3 py-2 text-xs font-medium transition-colors ${
                 selected
-                  ? "border-primary bg-primary/10 text-primary"
-                  : "border-card-border bg-background text-muted-foreground hover:border-primary/40"
+                  ? "border-foreground bg-foreground/5 text-foreground"
+                  : "border-card-border bg-background text-muted-foreground hover:text-foreground"
               }`}
             >
               <span
-                className={`h-2 w-2 rounded-full shrink-0 ${
-                  selected ? "bg-primary" : "bg-muted-foreground/30"
+                className={`h-1.5 w-1.5 rounded-full shrink-0 ${
+                  selected ? "bg-foreground" : "bg-muted-foreground/30"
                 }`}
               />
               <span className="truncate max-w-[160px]">
                 {entry.filename || formatFullTimestamp(entry.timestamp)}
               </span>
               <span
-                className={`shrink-0 inline-flex items-center rounded-full px-1.5 py-0.5 text-[10px] font-medium ${
+                className={`shrink-0 font-mono tabular-nums ${
                   entry.passRate >= 100
-                    ? "bg-success-bg border border-success-border text-success"
+                    ? "text-success"
                     : entry.passRate >= 50
-                    ? "bg-primary/10 border border-primary/20 text-primary"
-                    : "bg-failure-bg border border-failure-border text-failure"
+                    ? "text-muted-foreground"
+                    : "text-failure"
                 }`}
               >
                 {entry.passRate}%
@@ -283,10 +250,6 @@ function RunSelector({
     </div>
   );
 }
-
-// ---------------------------------------------------------------------------
-// Summary Delta Cards
-// ---------------------------------------------------------------------------
 
 interface RunStat {
   entry: HistoryEntry;
@@ -310,7 +273,6 @@ function SummaryDeltaCards({ runStats }: { runStats: RunStat[] }) {
   const criteriaDelta = latest.criteriaPassRate - previous.criteriaPassRate;
   const durationDelta = latest.duration - previous.duration;
 
-  // Scenario set differences
   const latestScenarioIds = new Set(
     latest.data.results.map((r) => r.scenarioId)
   );
@@ -328,7 +290,7 @@ function SummaryDeltaCards({ runStats }: { runStats: RunStat[] }) {
   }
 
   return (
-    <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+    <div className="mt-6 grid grid-cols-2 gap-px border border-card-border sm:grid-cols-4">
       <DeltaCard
         label="Scenario Pass Rate"
         delta={scenarioDelta}
@@ -353,29 +315,29 @@ function SummaryDeltaCards({ runStats }: { runStats: RunStat[] }) {
         }}
         positiveIsGood={false}
       />
-      <div className="rounded-xl border border-card-border bg-card p-4">
-        <div className="text-xs font-medium text-muted-foreground mb-1">
+      <div className="bg-card p-4">
+        <div className="text-xs text-muted-foreground mb-1">
           Scenario Changes
         </div>
         <div className="flex items-baseline gap-3">
           {addedCount > 0 && (
-            <span className="text-sm font-semibold text-success">
-              +{addedCount} new
+            <span className="text-sm font-medium text-success">
+              +{addedCount}
             </span>
           )}
           {removedCount > 0 && (
-            <span className="text-sm font-semibold text-failure">
-              -{removedCount} removed
+            <span className="text-sm font-medium text-failure">
+              -{removedCount}
             </span>
           )}
           {addedCount === 0 && removedCount === 0 && (
-            <span className="text-sm font-semibold text-muted-foreground">
-              No changes
+            <span className="text-sm text-muted-foreground">
+              None
             </span>
           )}
         </div>
         <div className="text-[10px] text-muted-foreground mt-1">
-          vs previous run
+          vs previous
         </div>
       </div>
     </div>
@@ -408,12 +370,12 @@ function DeltaCard({
     : `${isPositive ? "+" : ""}${Math.round(delta * 10) / 10}${suffix ?? ""}`;
 
   return (
-    <div className="rounded-xl border border-card-border bg-card p-4">
-      <div className="text-xs font-medium text-muted-foreground mb-1">
+    <div className="bg-card p-4">
+      <div className="text-xs text-muted-foreground mb-1">
         {label}
       </div>
       <div
-        className={`text-lg font-bold tabular-nums ${
+        className={`text-lg font-light tabular-nums ${
           isNeutral
             ? "text-muted-foreground"
             : isGood
@@ -424,15 +386,11 @@ function DeltaCard({
         {displayValue}
       </div>
       <div className="text-[10px] text-muted-foreground mt-1">
-        vs previous run
+        vs previous
       </div>
     </div>
   );
 }
-
-// ---------------------------------------------------------------------------
-// Time Series Chart (pure SVG)
-// ---------------------------------------------------------------------------
 
 interface ChartDataPoint {
   label: string;
@@ -458,7 +416,6 @@ function TimeSeriesChart({
 }) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
-  // Chart dimensions
   const width = 400;
   const height = 200;
   const paddingLeft = 50;
@@ -474,7 +431,6 @@ function TimeSeriesChart({
   const dataMax = propMax ?? Math.max(...values);
   const range = dataMax - dataMin || 1;
 
-  // Scale functions
   const xScale = (i: number): number => {
     if (data.length === 1) return paddingLeft + chartWidth / 2;
     return paddingLeft + (i / (data.length - 1)) * chartWidth;
@@ -484,7 +440,6 @@ function TimeSeriesChart({
     return paddingTop + chartHeight - ((v - dataMin) / range) * chartHeight;
   };
 
-  // Build path
   const points = data.map((d, i) => ({
     x: xScale(i),
     y: yScale(d.value),
@@ -495,7 +450,6 @@ function TimeSeriesChart({
       ? `M ${points.map((p) => `${p.x},${p.y}`).join(" L ")}`
       : "";
 
-  // Area fill
   const areaPath =
     points.length > 0
       ? `${linePath} L ${points[points.length - 1].x},${
@@ -503,7 +457,6 @@ function TimeSeriesChart({
         } L ${points[0].x},${paddingTop + chartHeight} Z`
       : "";
 
-  // Grid lines (4 horizontal)
   const gridLines = [0, 0.25, 0.5, 0.75, 1].map((frac) => {
     const val = dataMin + frac * range;
     return {
@@ -518,14 +471,13 @@ function TimeSeriesChart({
   };
 
   return (
-    <div className="rounded-xl border border-card-border bg-card p-4">
+    <div className="border border-card-border bg-card p-4">
       <div className="text-sm font-medium mb-3">{title}</div>
       <svg
         viewBox={`0 0 ${width} ${height}`}
         className="w-full h-auto"
         onMouseLeave={() => setHoveredIndex(null)}
       >
-        {/* Grid lines */}
         {gridLines.map((gl, i) => (
           <g key={i}>
             <line
@@ -535,7 +487,6 @@ function TimeSeriesChart({
               y2={gl.y}
               stroke="var(--card-border)"
               strokeWidth="1"
-              strokeDasharray="4 2"
             />
             <text
               x={paddingLeft - 6}
@@ -550,24 +501,21 @@ function TimeSeriesChart({
           </g>
         ))}
 
-        {/* Area fill */}
         {points.length > 1 && (
-          <path d={areaPath} fill={color} opacity={0.08} />
+          <path d={areaPath} fill={color} opacity={0.05} />
         )}
 
-        {/* Line */}
         {points.length > 1 && (
           <path
             d={linePath}
             fill="none"
             stroke={color}
-            strokeWidth="2.5"
+            strokeWidth="1.5"
             strokeLinecap="round"
             strokeLinejoin="round"
           />
         )}
 
-        {/* X-axis labels */}
         {data.map((d, i) => (
           <text
             key={i}
@@ -582,10 +530,8 @@ function TimeSeriesChart({
           </text>
         ))}
 
-        {/* Data points + hover zones */}
         {points.map((p, i) => (
           <g key={i}>
-            {/* Invisible wider hit area */}
             <rect
               x={
                 i === 0
@@ -605,17 +551,15 @@ function TimeSeriesChart({
               fill="transparent"
               onMouseEnter={() => setHoveredIndex(i)}
             />
-            {/* Point dot */}
             <circle
               cx={p.x}
               cy={p.y}
-              r={hoveredIndex === i ? 5 : 3.5}
+              r={hoveredIndex === i ? 4 : 2.5}
               fill={color}
               stroke="var(--card)"
-              strokeWidth="2"
+              strokeWidth="1.5"
               style={{ transition: "r 0.15s ease" }}
             />
-            {/* Tooltip */}
             {hoveredIndex === i && (
               <g>
                 <rect
@@ -623,7 +567,7 @@ function TimeSeriesChart({
                   y={p.y - 28}
                   width={72}
                   height={20}
-                  rx={4}
+                  rx={2}
                   fill="var(--foreground)"
                   opacity={0.9}
                 />
@@ -633,7 +577,7 @@ function TimeSeriesChart({
                   textAnchor="middle"
                   fill="var(--background)"
                   fontSize="10"
-                  fontWeight="600"
+                  fontWeight="500"
                   fontFamily="var(--font-mono)"
                 >
                   {displayVal(i)}
@@ -647,12 +591,7 @@ function TimeSeriesChart({
   );
 }
 
-// ---------------------------------------------------------------------------
-// Scenario Diff Table
-// ---------------------------------------------------------------------------
-
 function ScenarioDiffTable({ runStats }: { runStats: RunStat[] }) {
-  // Collect all scenario IDs across all runs
   const allScenarioIds = useMemo(() => {
     const idSet = new Set<string>();
     for (const run of runStats) {
@@ -663,7 +602,6 @@ function ScenarioDiffTable({ runStats }: { runStats: RunStat[] }) {
     return Array.from(idSet).sort();
   }, [runStats]);
 
-  // Build pass/fail map: scenarioId -> run index -> boolean | undefined
   const statusMap = useMemo(() => {
     const map = new Map<string, (boolean | undefined)[]>();
     for (const id of allScenarioIds) {
@@ -676,7 +614,6 @@ function ScenarioDiffTable({ runStats }: { runStats: RunStat[] }) {
     return map;
   }, [allScenarioIds, runStats]);
 
-  // Compute change status for each scenario
   const changeStatuses = useMemo(() => {
     const map = new Map<string, ChangeStatus>();
     for (const id of allScenarioIds) {
@@ -690,8 +627,8 @@ function ScenarioDiffTable({ runStats }: { runStats: RunStat[] }) {
 
   return (
     <div className="mt-6">
-      <h3 className="text-sm font-semibold mb-3">Scenario Results by Run</h3>
-      <div className="rounded-xl border border-card-border bg-card overflow-x-auto">
+      <h3 className="text-xs font-medium uppercase tracking-wider text-muted-foreground mb-3">Scenario Results by Run</h3>
+      <div className="border border-card-border bg-card overflow-x-auto">
         <table className="w-full text-xs">
           <thead>
             <tr className="border-b border-card-border">
@@ -743,15 +680,11 @@ function ScenarioDiffTable({ runStats }: { runStats: RunStat[] }) {
                         }`}
                       >
                         {passed === undefined ? (
-                          <span className="text-muted-foreground">--</span>
+                          <span className="text-muted-foreground">&mdash;</span>
                         ) : passed ? (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-success-bg border border-success-border px-1.5 py-0.5 text-[10px] font-medium text-success">
-                            Pass
-                          </span>
+                          <span className="text-success font-mono">Pass</span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-failure-bg border border-failure-border px-1.5 py-0.5 text-[10px] font-medium text-failure">
-                            Fail
-                          </span>
+                          <span className="text-failure font-mono">Fail</span>
                         )}
                       </td>
                     );
@@ -769,12 +702,7 @@ function ScenarioDiffTable({ runStats }: { runStats: RunStat[] }) {
   );
 }
 
-// ---------------------------------------------------------------------------
-// Criteria Diff Table
-// ---------------------------------------------------------------------------
-
 function CriteriaDiffTable({ runStats }: { runStats: RunStat[] }) {
-  // Collect all criterion IDs across all runs
   const allCriterionIds = useMemo(() => {
     const idSet = new Set<string>();
     for (const run of runStats) {
@@ -787,7 +715,6 @@ function CriteriaDiffTable({ runStats }: { runStats: RunStat[] }) {
     return Array.from(idSet).sort();
   }, [runStats]);
 
-  // For each criterion, per run: { passed, total }
   const criterionMap = useMemo(() => {
     const map = new Map<
       string,
@@ -816,8 +743,8 @@ function CriteriaDiffTable({ runStats }: { runStats: RunStat[] }) {
 
   return (
     <div className="mt-6">
-      <h3 className="text-sm font-semibold mb-3">Criteria Results by Run</h3>
-      <div className="rounded-xl border border-card-border bg-card overflow-x-auto">
+      <h3 className="text-xs font-medium uppercase tracking-wider text-muted-foreground mb-3">Criteria Results by Run</h3>
+      <div className="border border-card-border bg-card overflow-x-auto">
         <table className="w-full text-xs">
           <thead>
             <tr className="border-b border-card-border">
@@ -880,7 +807,7 @@ function CriteriaDiffTable({ runStats }: { runStats: RunStat[] }) {
                         }`}
                       >
                         {stats.total === 0 ? (
-                          <span className="text-muted-foreground">--</span>
+                          <span className="text-muted-foreground">&mdash;</span>
                         ) : (
                           <span
                             className={`font-mono ${
@@ -907,14 +834,9 @@ function CriteriaDiffTable({ runStats }: { runStats: RunStat[] }) {
   );
 }
 
-// ---------------------------------------------------------------------------
-// Change status helpers
-// ---------------------------------------------------------------------------
-
 function computeChangeStatus(
   statuses: (boolean | undefined)[]
 ): ChangeStatus {
-  // Find first defined and last defined
   const definedStatuses = statuses.filter((s) => s !== undefined) as boolean[];
 
   if (definedStatuses.length === 0) return "new";
@@ -922,7 +844,6 @@ function computeChangeStatus(
   const firstIdx = statuses.findIndex((s) => s !== undefined);
   const lastIdx = statuses.length - 1 - [...statuses].reverse().findIndex((s) => s !== undefined);
 
-  // Only appears in the last run(s) and not in any earlier run
   const appearsEarly = statuses.slice(0, -1).some((s) => s !== undefined);
   const appearsLast = statuses[statuses.length - 1] !== undefined;
 
@@ -939,42 +860,27 @@ function computeChangeStatus(
 }
 
 function ChangeStatusBadge({ status }: { status: ChangeStatus }) {
-  switch (status) {
-    case "regressed":
-      return (
-        <span className="inline-flex items-center rounded-full bg-failure-bg border border-failure-border px-2 py-0.5 text-[10px] font-medium text-failure">
-          Regressed
-        </span>
-      );
-    case "fixed":
-      return (
-        <span className="inline-flex items-center rounded-full bg-success-bg border border-success-border px-2 py-0.5 text-[10px] font-medium text-success">
-          Fixed
-        </span>
-      );
-    case "stable-pass":
-      return (
-        <span className="inline-flex items-center rounded-full bg-success-bg/50 border border-success-border/50 px-2 py-0.5 text-[10px] font-medium text-success/80">
-          Stable Pass
-        </span>
-      );
-    case "stable-fail":
-      return (
-        <span className="inline-flex items-center rounded-full bg-failure-bg/50 border border-failure-border/50 px-2 py-0.5 text-[10px] font-medium text-failure/80">
-          Stable Fail
-        </span>
-      );
-    case "new":
-      return (
-        <span className="inline-flex items-center rounded-full bg-primary/10 border border-primary/20 px-2 py-0.5 text-[10px] font-medium text-primary">
-          New
-        </span>
-      );
-    case "removed":
-      return (
-        <span className="inline-flex items-center rounded-full bg-muted border border-card-border px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
-          Removed
-        </span>
-      );
-  }
+  const styles: Record<ChangeStatus, string> = {
+    regressed: "text-failure",
+    fixed: "text-success",
+    "stable-pass": "text-success/60",
+    "stable-fail": "text-failure/60",
+    new: "text-foreground",
+    removed: "text-muted-foreground",
+  };
+
+  const labels: Record<ChangeStatus, string> = {
+    regressed: "Regressed",
+    fixed: "Fixed",
+    "stable-pass": "Stable",
+    "stable-fail": "Failing",
+    new: "New",
+    removed: "Removed",
+  };
+
+  return (
+    <span className={`text-[11px] font-medium ${styles[status]}`}>
+      {labels[status]}
+    </span>
+  );
 }
