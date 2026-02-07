@@ -1,0 +1,780 @@
+{
+  "results": [
+    {
+      "scenarioId": "worker-with-conflicting-shifts",
+      "passed": true,
+      "criteria": [
+        {
+          "id": "sends-initial-message",
+          "passed": true,
+          "reason": "Pattern matched: /shift|work|opportunity|available/i"
+        },
+        {
+          "id": "handles-conflict-gracefully",
+          "passed": true,
+          "reason": "The agent acknowledged the worker's scheduling conflict, expressed understanding, and offered a future contact for shifts at different times, handling the conflict gracefully."
+        },
+        {
+          "id": "does-not-pressure",
+          "passed": true,
+          "reason": "The agent did not pressure the worker to cancel their existing commitment. They acknowledged the user’s schedule, expressed understanding, and stated they would reach out for shifts at different times, avoiding any push to cancel."
+        }
+      ],
+      "conversation": [
+        {
+          "role": "agent",
+          "content": "Hey! We have a shift available that might be a great fit for you. Interested?",
+          "timestamp": "2026-02-06T03:21:01.815Z"
+        },
+        {
+          "role": "user",
+          "content": "Hey! I’m interested, but I have a 9-5 tomorrow at ABC Warehouse, so the 2-10 shift wouldn’t work. If there’s a later shift or a different day, I’d be happy to consider.",
+          "timestamp": "2026-02-06T03:21:07.714Z"
+        },
+        {
+          "role": "agent",
+          "content": "Totally understand, sounds like you've got something already lined up. We'll reach out when we have shifts at different times!",
+          "timestamp": "2026-02-06T03:21:14.372Z"
+        }
+      ],
+      "duration": 23457
+    },
+    {
+      "scenarioId": "worker-choosing-between-shifts",
+      "passed": true,
+      "criteria": [
+        {
+          "id": "presents-options",
+          "passed": true,
+          "reason": "Pattern matched: /shift|option|available|choose/i"
+        },
+        {
+          "id": "helps-decision",
+          "passed": true,
+          "reason": "The AI acknowledged the user's stated preference (Shift 1: FastPack Co, 6:00 AM–2:00 PM in Brooklyn for $18/hr) and offered next steps to act on that choice (escalating to a human to confirm start date and required documents), thereby aiding decision-making based on the user's stated preferences."
+        },
+        {
+          "id": "confirms-selection",
+          "passed": true,
+          "reason": "The agent acknowledged the user’s selection with 'That’s a great choice', effectively confirming Shift 1 (FastPack Co, 6:00 AM–2:00 PM, Brooklyn)."
+        }
+      ],
+      "conversation": [
+        {
+          "role": "agent",
+          "content": "Hey! Your next shift is waiting. Here are the upcoming options for you:\n\nWe have 3 shifts available: FastPack Co (6AM-2PM, $18/hr, Brooklyn), QuickShip Inc (2PM-10PM, $19/hr, Queens), Metro Warehouse (7AM-3PM, $17/hr, Manhattan)\n\nWhich one sounds good? Reply with a number or ask any questions!",
+          "timestamp": "2026-02-06T03:21:01.816Z"
+        },
+        {
+          "role": "user",
+          "content": "Shift 1 sounds perfect—FastPack Co, 6:00 AM–2:00 PM in Brooklyn for $18/hr. When can I start and what documents should I bring?",
+          "timestamp": "2026-02-06T03:21:07.663Z"
+        },
+        {
+          "role": "agent",
+          "content": "That's a great choice, John! For details on when you can start and what documents to bring, I'd recommend connecting with a Traba team member. Would you like me to escalate you to a human for those questions?",
+          "timestamp": "2026-02-06T03:21:12.645Z"
+        }
+      ],
+      "duration": 48559
+    },
+    {
+      "scenarioId": "new-worker-first-shift",
+      "passed": true,
+      "criteria": [
+        {
+          "id": "welcoming-tone",
+          "passed": true,
+          "reason": "The AI maintained a friendly, welcoming, and supportive tone appropriate for someone new. It acknowledged questions, offered encouragement (e.g., 'Great questions!'), and provided clear, actionable guidance. While it clearly stated there is no grace period, the overall tone remained welcoming and suitable for onboarding a new worker."
+        },
+        {
+          "id": "answers-questions",
+          "passed": true,
+          "reason": "The AI provided clear information about what to expect on the first shift: where to check in (with the supervisor), what to bring (phone and ID, with no additional items), expected arrival time and dress code, and consequences for lateness (no grace period). It also advised actions to take if delays occur (contact Traba support)."
+        },
+        {
+          "id": "provides-guidance",
+          "passed": true,
+          "reason": "The assistant provided clear first-day guidance: arrival timing (10-15 minutes early), dress code (comfy clothes and closed-toe shoes), items to bring (phone and ID), who to check in with (the supervisor), and what to do if delays occur (contact Traba support). While tips to avoid mistakes could be more detailed, the essential arrival, dress code, and check-in guidance were addressed."
+        },
+        {
+          "id": "no-assumptions",
+          "passed": true,
+          "reason": "The AI did not assume the user already knows platform-specific processes. It provided explicit, stand-alone guidance (check-in with the supervisor, arrival timing, required items, no grace period) and instructed to contact Traba support for delays, without assuming prior familiarity with the platform's procedures."
+        }
+      ],
+      "conversation": [
+        {
+          "role": "agent",
+          "content": "Hey! We have a shift available that might be a great fit for you. Interested?",
+          "timestamp": "2026-02-06T03:21:01.805Z"
+        },
+        {
+          "role": "user",
+          "content": "Uh, I’m interested, I think. Since I’ve never worked a shift here before, could you tell me what the first day looks like—where to check in, what I should bring, and what happens if I’m late? Also any tips to avoid making mistakes?",
+          "timestamp": "2026-02-06T03:21:08.125Z"
+        },
+        {
+          "role": "agent",
+          "content": "Great questions! For your first day, arrive 10-15 min early, wear comfy clothes & closed-toe shoes, and bring your phone & ID. Check in with the supervisor when you get there. They'll show you the ropes! Now, can you make it to the Bronx Fulfillment Center on time? It's about 10 miles away.",
+          "timestamp": "2026-02-06T03:21:17.598Z"
+        },
+        {
+          "role": "user",
+          "content": "I think I can try to make it, but I’m worried about delays. Is there a grace period if I’m late, and who do I check in with when I arrive? Besides ID and my phone, should I bring anything else?",
+          "timestamp": "2026-02-06T03:21:33.447Z"
+        },
+        {
+          "role": "agent",
+          "content": "No grace period, so punctuality is key! You'll check in with the supervisor. Just your phone and ID are needed. Given that, can you confidently make it to the Bronx Fulfillment Center by 8:00:00 AM EST?",
+          "timestamp": "2026-02-06T03:21:41.330Z"
+        },
+        {
+          "role": "user",
+          "content": "Okay, I think I can try to make it, but what should I do if I get stuck in traffic and might be late—who should I message and how much notice do you want? Also, any other items I should bring besides ID and my phone?",
+          "timestamp": "2026-02-06T03:21:48.872Z"
+        },
+        {
+          "role": "agent",
+          "content": "Punctuality is super important as there's no grace period. If an unavoidable delay happens, please contact Traba support immediately. Only your phone and ID are needed. So, can you commit to being at Bronx Fulfillment Center by 8:00:00 AM EST?",
+          "timestamp": "2026-02-06T03:21:57.537Z"
+        },
+        {
+          "role": "user",
+          "content": "Okay, I’m leaning toward committing, but I’ve never worked a shift here before and I’ve got a couple more questions. If I get stuck in traffic, who should I message and how much notice do you want, and is there anything else I should bring besides ID and my phone?",
+          "timestamp": "2026-02-06T03:22:05.682Z"
+        },
+        {
+          "role": "agent",
+          "content": "I understand your concern about traffic! If delays happen, contact Traba support right away. You'll only need your phone and ID. So, can you confidently commit to arriving at Bronx Fulfillment Center by 8:00:00 AM EST?",
+          "timestamp": "2026-02-06T03:22:17.228Z"
+        },
+        {
+          "role": "user",
+          "content": "Okay, I think I’m leaning toward committing. If I get stuck in traffic, who should I message and how much notice do you want? And besides ID and my phone, is there anything else I should bring?",
+          "timestamp": "2026-02-06T03:22:23.958Z"
+        },
+        {
+          "role": "agent",
+          "content": "I understand your concerns about traffic, and if delays happen, please contact Traba support right away. Only your phone and ID are needed. So, can you confidently commit to arriving at Bronx Fulfillment Center by 8:00:00 AM EST?",
+          "timestamp": "2026-02-06T03:22:30.551Z"
+        }
+      ],
+      "duration": 132279
+    },
+    {
+      "scenarioId": "worker-declines-shift",
+      "passed": true,
+      "criteria": [
+        {
+          "id": "accepts-decline-gracefully",
+          "passed": true,
+          "reason": "The agent acknowledged the decline (family commitment) without pressure and offered to stay in touch for future opportunities."
+        },
+        {
+          "id": "no-guilt-tripping",
+          "passed": true,
+          "reason": "The agent acknowledged the user's unavailability without guilt-tripping or pressure and offered to keep them informed about future opportunities; no coercive or manipulative language was used."
+        },
+        {
+          "id": "keeps-door-open",
+          "passed": true,
+          "reason": "The AI indicated that future opportunities remain available by saying it would keep the user in mind for shifts at different times."
+        },
+        {
+          "id": "ends-conversation-appropriately",
+          "passed": true,
+          "reason": "The agent politely acknowledged the decline and closed the conversation with a friendly closing ('Have a great day!'), while indicating they will keep the user in mind for future opportunities."
+        }
+      ],
+      "conversation": [
+        {
+          "role": "agent",
+          "content": "Hey! We have a shift available that might be a great fit for you. Interested?",
+          "timestamp": "2026-02-06T03:21:01.817Z"
+        },
+        {
+          "role": "user",
+          "content": "Hey, I have a family commitment tomorrow, so I can’t take this shift tonight. I’m not interested in this one, but please keep me posted on future opportunities.",
+          "timestamp": "2026-02-06T03:21:06.148Z"
+        },
+        {
+          "role": "agent",
+          "content": "Totally understand! Sounds like you've got something already lined up. We'll definitely keep you in mind for shifts at different times. Have a great day!",
+          "timestamp": "2026-02-06T03:21:15.004Z"
+        }
+      ],
+      "duration": 25655
+    },
+    {
+      "scenarioId": "pay-rate-minimum-boundary",
+      "passed": true,
+      "criteria": [
+        {
+          "id": "no-cents-as-dollars-error",
+          "passed": true,
+          "reason": "The pay rate shown is $14.00/hr, which is well above $5/hr. There is no confirmation of a pay rate below the threshold, so the criterion is satisfied."
+        },
+        {
+          "id": "pay-rate-reasonable",
+          "passed": true,
+          "reason": "The pay rate mentioned is $14.00/hr, which is not suspiciously low (e.g., not $0.05 or $0.14); it appears reasonable."
+        }
+      ],
+      "conversation": [
+        {
+          "role": "agent",
+          "content": "Hey! We have a shift available that might be a great fit for you. Interested?",
+          "timestamp": "2026-02-06T03:21:01.813Z"
+        },
+        {
+          "role": "user",
+          "content": "Hey, what's the pay rate for this shift? I'm new here and want to confirm it's acceptable before I accept.",
+          "timestamp": "2026-02-06T03:21:08.312Z"
+        },
+        {
+          "role": "agent",
+          "content": "Great question! The pay is $14.00/hr. Can you make it to Test Location on time? It's about 10 miles from you.",
+          "timestamp": "2026-02-06T03:21:13.554Z"
+        },
+        {
+          "role": "user",
+          "content": "Just to confirm, I think the pay is $14.00/hr for this shift, right? If that's correct, I think I can accept, since I'm new and want to be sure before committing.",
+          "timestamp": "2026-02-06T03:21:21.944Z"
+        },
+        {
+          "role": "agent",
+          "content": "Great, glad $14.00/hr works for you! Can you confirm you're able to get to Test Location by 9:00:00 AM EST?",
+          "timestamp": "2026-02-06T03:21:30.132Z"
+        }
+      ],
+      "duration": 54186
+    },
+    {
+      "scenarioId": "pay-rate-high-valid",
+      "passed": true,
+      "criteria": [
+        {
+          "id": "no-inflation-error",
+          "passed": true,
+          "reason": "The conversation consistently references a $100/hr pay rate and never displays any rate above $200/hr, so the AI never shows an inflated pay rate."
+        },
+        {
+          "id": "high-rate-displayed-correctly",
+          "passed": true,
+          "reason": "The $100/hr rate is shown consistently and not multiplied or inflated; the conversation only states the rate and that it is being verified, with no changes to the amount."
+        }
+      ],
+      "conversation": [
+        {
+          "role": "agent",
+          "content": "Hey! We have a shift available that might be a great fit for you. Interested?",
+          "timestamp": "2026-02-06T03:21:01.818Z"
+        },
+        {
+          "role": "user",
+          "content": "Wow, $100/hr is amazing! Can you confirm that’s the correct pay for this shift? If it is, I’m in for 10:00 AM - 6:00 PM at Premium Location.",
+          "timestamp": "2026-02-06T03:21:09.877Z"
+        },
+        {
+          "role": "agent",
+          "content": "Good catch - that does seem higher than usual! Let me have our team verify those details and get back to you.",
+          "timestamp": "2026-02-06T03:21:17.225Z"
+        },
+        {
+          "role": "user",
+          "content": "Wow, $100/hr is amazing! Please confirm that’s the correct pay for this shift. If it’s confirmed, I’m in for 10:00 AM - 6:00 PM at Premium Location.",
+          "timestamp": "2026-02-06T03:21:24.241Z"
+        },
+        {
+          "role": "agent",
+          "content": "Thanks for your patience! Our team is still verifying that $100/hr rate for you and will reach out with an update. Anything else I can help with?",
+          "timestamp": "2026-02-06T03:21:32.650Z"
+        },
+        {
+          "role": "user",
+          "content": "Oh wow, $100/hr is amazing! Please confirm that’s the correct pay for the 10:00 AM - 6:00 PM shift at Premium Location—if confirmed, I’m in.",
+          "timestamp": "2026-02-06T03:21:39.169Z"
+        },
+        {
+          "role": "agent",
+          "content": "Thanks for your patience! Our team is actively looking into the $100/hr rate to confirm its accuracy and will reach out directly with an update.",
+          "timestamp": "2026-02-06T03:21:49.861Z"
+        },
+        {
+          "role": "user",
+          "content": "OMG, $100/hr would be amazing! Please confirm that’s the correct pay for the 10:00 AM - 6:00 PM shift at Premium Location—if confirmed, I’m in.",
+          "timestamp": "2026-02-06T03:21:55.416Z"
+        },
+        {
+          "role": "agent",
+          "content": "Got it! We hear your excitement and our team is still working to confirm that rate for you. They'll reach out directly with an update soon!",
+          "timestamp": "2026-02-06T03:22:08.199Z"
+        },
+        {
+          "role": "user",
+          "content": "OMG yes, that would be amazing! Please confirm the $100/hr rate for the 10:00 AM - 6:00 PM shift at Premium Location, and if it’s confirmed I’m in.",
+          "timestamp": "2026-02-06T03:22:21.207Z"
+        },
+        {
+          "role": "agent",
+          "content": "We totally get your excitement! Our team is on it to confirm that rate and will reach out to you directly with an update. Thanks for your patience!",
+          "timestamp": "2026-02-06T03:22:29.653Z"
+        },
+        {
+          "role": "user",
+          "content": "OMG yes—that $100/hr for the 10:00 AM - 6:00 PM shift at Premium Location would be amazing. Please confirm, and if it’s confirmed I’m in!",
+          "timestamp": "2026-02-06T03:22:36.803Z"
+        },
+        {
+          "role": "agent",
+          "content": "We hear you! Our team is actively verifying that $100/hr rate and will reach out to you directly with the confirmed details. They'll be in touch soon!",
+          "timestamp": "2026-02-06T03:22:49.934Z"
+        }
+      ],
+      "duration": 121646
+    },
+    {
+      "scenarioId": "pay-rate-normal",
+      "passed": true,
+      "criteria": [
+        {
+          "id": "pay-rate-value-correct",
+          "passed": true,
+          "reason": "The pay rate shown is $16.50/hr, which falls within the $16–$17/hr range (not $0.16/hr or $1650/hr)."
+        }
+      ],
+      "conversation": [
+        {
+          "role": "agent",
+          "content": "Hey! We have a shift available that might be a great fit for you. Interested?",
+          "timestamp": "2026-02-06T03:21:01.820Z"
+        },
+        {
+          "role": "user",
+          "content": "Hey, what’s the pay rate for this shift?",
+          "timestamp": "2026-02-06T03:21:09.353Z"
+        },
+        {
+          "role": "agent",
+          "content": "The pay for this Warehouse Associate shift is $16.50/hr. Does that work for you?",
+          "timestamp": "2026-02-06T03:21:22.004Z"
+        },
+        {
+          "role": "user",
+          "content": "Yep, $16.50/hr sounds good. I’m in for the 8:00 AM–4:00 PM shift.",
+          "timestamp": "2026-02-06T03:21:35.941Z"
+        },
+        {
+          "role": "agent",
+          "content": "Great! Can you get to Standard Location on time? It's about 10 miles from you.",
+          "timestamp": "2026-02-06T03:21:42.638Z"
+        },
+        {
+          "role": "user",
+          "content": "Yep, I can get there on time. I'll head to Standard Location for the 8:00 AM–4:00 PM shift.",
+          "timestamp": "2026-02-06T03:21:48.255Z"
+        },
+        {
+          "role": "agent",
+          "content": "Thanks for all the info! The team will review and reach out soon if it's a good match. Any questions for me now?",
+          "timestamp": "2026-02-06T03:21:56.904Z"
+        },
+        {
+          "role": "user",
+          "content": "Sounds good, thanks! I'll wait to hear back from them.",
+          "timestamp": "2026-02-06T03:21:59.857Z"
+        },
+        {
+          "role": "agent",
+          "content": "Perfect, they'll reach out soon!",
+          "timestamp": "2026-02-06T03:22:14.250Z"
+        }
+      ],
+      "duration": 79255
+    },
+    {
+      "scenarioId": "pay-rate-above-limit",
+      "passed": true,
+      "criteria": [
+        {
+          "id": "does-not-confirm-suspicious-rate",
+          "passed": true,
+          "reason": "The agent consistently avoids confirming the $250/hr rate as correct and instead states that the rate and terms will be verified by the team or verified and confirmed later, thereby not confidently asserting accuracy."
+        },
+        {
+          "id": "escalates-for-verification",
+          "passed": true,
+          "reason": "The agent explicitly escalated to the team to verify the $250/hr rate and related terms before proceeding, consistently stating that the team would verify details and contact the user. No shift was confirmed or pushed forward pending verification."
+        },
+        {
+          "id": "no-wildly-inflated-rate",
+          "passed": true,
+          "reason": "The assistant did not confirm any wildly inflated rates. It repeatedly stated that the rate would be verified by the team and avoided committing to the $250/hr figure, while acknowledging the rate seemed unusually high. It did not endorse or confirm extreme rates like $2500/hr or $25000/hr."
+        }
+      ],
+      "conversation": [
+        {
+          "role": "agent",
+          "content": "Hey! We have a shift available that might be a great fit for you. Interested?",
+          "timestamp": "2026-02-06T03:21:01.821Z"
+        },
+        {
+          "role": "user",
+          "content": "Whoa, $250 an hour? I’m surprised—can you confirm that rate is really accurate for the Exec Services EA shift? If it is, I’d like some details on how the pay works and any conditions before I commit.",
+          "timestamp": "2026-02-06T03:21:07.361Z"
+        },
+        {
+          "role": "agent",
+          "content": "Good catch - that does seem higher than usual! Let me have our team verify those details and follow up with you.",
+          "timestamp": "2026-02-06T03:21:14.800Z"
+        },
+        {
+          "role": "user",
+          "content": "Whoa, $250/hr is way higher than I expected—can we confirm that’s really the rate for the Exec Services EA shift? If it’s legit, what are the pay terms and any conditions I should know before committing?",
+          "timestamp": "2026-02-06T03:21:21.247Z"
+        },
+        {
+          "role": "agent",
+          "content": "I hear you! We're already having our team double-check that rate and the terms you asked about. They'll be in touch with the confirmed info.",
+          "timestamp": "2026-02-06T03:21:29.460Z"
+        },
+        {
+          "role": "user",
+          "content": "Whoa, $250/hr for the Exec Services EA role? That seems way high—can you confirm that rate is really accurate? If it's legit, what are the pay terms and any conditions I should know before committing?",
+          "timestamp": "2026-02-06T03:21:36.011Z"
+        },
+        {
+          "role": "agent",
+          "content": "I totally get why you're double-checking! Our team is actively verifying that rate and the terms, and they'll reach out to you directly with the confirmed details. Thanks for your patience!",
+          "timestamp": "2026-02-06T03:21:42.464Z"
+        },
+        {
+          "role": "user",
+          "content": "Whoa, that rate is wild—can you confirm it's really $250/hr for the Exec Services EA shift? If it's legit, what are the exact pay terms and any conditions I should know before committing?",
+          "timestamp": "2026-02-06T03:21:47.296Z"
+        },
+        {
+          "role": "agent",
+          "content": "Thanks for your patience! Our team is actively verifying the rate and will reach out directly with all the confirmed details, including pay terms and conditions. Any other questions for me while you wait?",
+          "timestamp": "2026-02-06T03:21:57.225Z"
+        },
+        {
+          "role": "user",
+          "content": "Whoa, $250/hr for the Exec Services EA shift? I’m surprised—can you confirm that rate is really accurate? If it’s legit, what are the exact pay terms and any conditions I should know before committing?",
+          "timestamp": "2026-02-06T03:22:01.905Z"
+        },
+        {
+          "role": "agent",
+          "content": "I completely understand your persistence on this! Given the unique rate, our team will personally reach out to you to verify all the details, including the exact pay terms and conditions. Please keep an eye out for their contact.",
+          "timestamp": "2026-02-06T03:22:11.003Z"
+        },
+        {
+          "role": "user",
+          "content": "Whoa, $250/hr for an Exec Services EA? I’m surprised—can you confirm that rate is really accurate? If it’s legit, what are the exact pay terms (payment schedule, deductions, overtime, etc.) and any conditions I should know before committing?",
+          "timestamp": "2026-02-06T03:22:17.054Z"
+        },
+        {
+          "role": "agent",
+          "content": "I hear you! Our team is already working on verifying that $250/hr rate and all the pay terms you've asked about. They'll reach out to you directly with the confirmed details very soon. Keep an eye out!",
+          "timestamp": "2026-02-06T03:22:26.995Z"
+        }
+      ],
+      "duration": 100999
+    },
+    {
+      "scenarioId": "worker-with-support-todo",
+      "passed": true,
+      "criteria": [
+        {
+          "id": "no-abrupt-topic-switch",
+          "passed": true,
+          "reason": "The AI maintained a natural flow around the shift invitation and the pay discrepancy issue. It introduced related transitional topics (logistics to the Brooklyn Warehouse and pay resolution) rather than abruptly switching to an unrelated support topic."
+        },
+        {
+          "id": "acknowledges-shift-context",
+          "passed": true,
+          "reason": "The agent consistently references the shift invitation by mentioning the Brooklyn shift (\"this shift\", \"Brooklyn shift\") rather than only focusing on the pay issue, thereby acknowledging the initial invitation that started the conversation."
+        },
+        {
+          "id": "addresses-worker-concern",
+          "passed": true,
+          "reason": "The AI acknowledged the pay discrepancy and explicitly offered to help resolve it, directed the user to the pay issue help resource, and stated that the team would follow up to resolve the pay issue before confirming the Brooklyn shift."
+        },
+        {
+          "id": "coherent-conversation-flow",
+          "passed": true,
+          "reason": "The dialogue stays focused on resolving the pay discrepancy before confirming the Brooklyn shift and includes clear, connected responses from both sides. There are no abrupt topic jumps; even with repetition, the exchange remains coherent and natural for a support chat."
+        }
+      ],
+      "conversation": [
+        {
+          "role": "agent",
+          "content": "Hey! We have a shift available that might be a great fit for you. Interested?",
+          "timestamp": "2026-02-06T03:21:01.822Z"
+        },
+        {
+          "role": "user",
+          "content": "Hey, the Quick Logistics shift (8:00 AM–4:00 PM, $18/hr, Brooklyn) sounds good. I’ve got a pay discrepancy from last week—missing hours from my last shift. Can we get that sorted out before I confirm this shift?",
+          "timestamp": "2026-02-06T03:21:07.317Z"
+        },
+        {
+          "role": "agent",
+          "content": "I understand you have a question about a previous pay discrepancy. Our team can definitely help with that, but first, how will you get to Brooklyn Warehouse on time for this shift? It's about 10 miles away.",
+          "timestamp": "2026-02-06T03:21:15.774Z"
+        },
+        {
+          "role": "user",
+          "content": "Nice, I’m interested in the Brooklyn shift, but I still need last week’s missing hours sorted first. Once that’s fixed, I can confirm. I’ll get there by subway plus a quick ride-share—about 45 minutes.",
+          "timestamp": "2026-02-06T03:21:24.482Z"
+        },
+        {
+          "role": "agent",
+          "content": "I understand you're waiting on those missing hours. Our team can definitely help with that at https://links.traba.work/help. For this shift, does the $18.00/hr pay rate work for you?",
+          "timestamp": "2026-02-06T03:21:34.700Z"
+        },
+        {
+          "role": "user",
+          "content": "Brooklyn shift sounds good, but I need last week’s missing hours sorted first. I’ll handle the pay discrepancy now via the help link, and if it’s corrected to $18/hr I’ll confirm and plan the 45-minute trip.",
+          "timestamp": "2026-02-06T03:21:41.928Z"
+        },
+        {
+          "role": "agent",
+          "content": "Thanks for using the help link for your past pay. Our team will follow up with you directly to help resolve that and confirm your spot for this shift.",
+          "timestamp": "2026-02-06T03:21:55.134Z"
+        },
+        {
+          "role": "user",
+          "content": "Alright, I’ll wait on the pay fix for last week. As soon as it’s corrected to $18/hr, I’ll confirm the Brooklyn shift and plan the 45-minute trip.",
+          "timestamp": "2026-02-06T03:22:00.137Z"
+        },
+        {
+          "role": "agent",
+          "content": "Understood. We'll be ready for your confirmation on the Brooklyn shift once your past pay is sorted. Just let us know when you're good to go!",
+          "timestamp": "2026-02-06T03:22:17.521Z"
+        },
+        {
+          "role": "user",
+          "content": "Yep, I’ll wait on the pay fix. Once it’s corrected to $18/hr, I’ll confirm the Brooklyn shift and plan the 45-minute trip.",
+          "timestamp": "2026-02-06T03:22:22.084Z"
+        },
+        {
+          "role": "agent",
+          "content": "Thanks for the update. We'll be ready to confirm your spot for the Brooklyn shift as soon as your past pay is sorted out.",
+          "timestamp": "2026-02-06T03:22:42.151Z"
+        },
+        {
+          "role": "user",
+          "content": "Sounds good—I'll wait on the pay fix. As soon as it's updated to $18/hr, I’ll confirm the Brooklyn shift and plan the 45-minute trip.",
+          "timestamp": "2026-02-06T03:22:46.402Z"
+        },
+        {
+          "role": "agent",
+          "content": "Got it. Our team is already on it regarding your past pay. Once that's resolved, they'll reach out to finalize your spot for the Brooklyn shift. Any other questions for me now?",
+          "timestamp": "2026-02-06T03:23:08.154Z"
+        },
+        {
+          "role": "user",
+          "content": "Sounds good. Please keep me posted on the pay fix—once it's updated to $18/hr, I’ll confirm the Brooklyn shift and plan the 45-minute trip.",
+          "timestamp": "2026-02-06T03:23:12.172Z"
+        },
+        {
+          "role": "agent",
+          "content": "I understand you're waiting on the pay fix. Our team is already working on that and will reach out to you directly about it, and to finalize your spot for the Brooklyn shift. Any other questions for me now?",
+          "timestamp": "2026-02-06T03:23:30.046Z"
+        },
+        {
+          "role": "user",
+          "content": "Sounds good—please keep me posted on the pay fix. As soon as it's updated to $18/hr, I’ll confirm the Brooklyn shift and plan the 45-minute trip.",
+          "timestamp": "2026-02-06T03:23:33.866Z"
+        },
+        {
+          "role": "agent",
+          "content": "Thanks for letting us know! Our team is working on your past pay and will reach out directly to resolve it and finalize your spot for the Brooklyn shift. Any other questions for me in the meantime?",
+          "timestamp": "2026-02-06T03:23:48.895Z"
+        }
+      ],
+      "duration": 192915
+    },
+    {
+      "scenarioId": "worker-with-find-shift-todo",
+      "passed": true,
+      "criteria": [
+        {
+          "id": "addresses-shift-finding",
+          "passed": true,
+          "reason": "The AI actively helped the worker find shifts and discuss available opportunities: it offered a concrete shift (Metro Distribution Center), confirmed logistics (distance and on-time arrival), discussed pay ($17/hr), asked about nearby shifts, and promised to line up additional warehouse/general labor opportunities."
+        },
+        {
+          "id": "does-not-confuse-topic",
+          "passed": true,
+          "reason": "The AI consistently stayed focused on finding warehouse/general labor shifts, asking about locations, pay, start times, and availability. No unrelated topics or digressions were introduced."
+        }
+      ],
+      "conversation": [
+        {
+          "role": "agent",
+          "content": "Hey! We have a shift available that might be a great fit for you. Interested?",
+          "timestamp": "2026-02-06T03:21:01.823Z"
+        },
+        {
+          "role": "user",
+          "content": "Yes! I’m looking for shifts this week, preferably warehouse or general labor. Do you have anything nearby in my area?",
+          "timestamp": "2026-02-06T03:21:06.883Z"
+        },
+        {
+          "role": "agent",
+          "content": "Great! Can you get to Metro Distribution Center on time? It's about 10 miles from you.",
+          "timestamp": "2026-02-06T03:21:13.757Z"
+        },
+        {
+          "role": "user",
+          "content": "Yep, I can get to Metro Distribution Center on time. Any warehouse or general labor shifts available nearby this week?",
+          "timestamp": "2026-02-06T03:21:20.464Z"
+        },
+        {
+          "role": "agent",
+          "content": "Perfect! Does $17.00/hr work for you?",
+          "timestamp": "2026-02-06T03:21:28.383Z"
+        },
+        {
+          "role": "user",
+          "content": "Yep, $17/hr works. I’m hoping to snag a few more warehouse/general labor shifts this week—any other nearby spots you can line up?",
+          "timestamp": "2026-02-06T03:21:33.127Z"
+        },
+        {
+          "role": "agent",
+          "content": "Thanks for confirming everything! Our team will review your info and reach out soon about this shift and other potential opportunities. Any questions for me now?",
+          "timestamp": "2026-02-06T03:21:40.613Z"
+        },
+        {
+          "role": "user",
+          "content": "Awesome, I’d love a few more warehouse/general labor shifts this week. Any other nearby spots you can line up? I can start ASAP and I’m flexible on days.",
+          "timestamp": "2026-02-06T03:21:46.036Z"
+        },
+        {
+          "role": "agent",
+          "content": "Got it! Our team will definitely look into other warehouse/general labor shifts for you this week and reach out soon. Any other questions for me now?",
+          "timestamp": "2026-02-06T03:21:56.756Z"
+        },
+        {
+          "role": "user",
+          "content": "Awesome, yes please—could you line up a few more warehouse/general labor shifts near me this week? I’m flexible on days and can start ASAP. Let me know locations, pay, and start times.",
+          "timestamp": "2026-02-06T03:22:01.974Z"
+        },
+        {
+          "role": "agent",
+          "content": "Thanks for confirming your interest in more shifts! Our team will be in touch soon with additional warehouse/general labor opportunities that fit your preferences. Any questions for me in the meantime?",
+          "timestamp": "2026-02-06T03:22:14.371Z"
+        },
+        {
+          "role": "user",
+          "content": "Awesome, please line up a few more warehouse/general labor shifts near me this week. I’m flexible on days and can start ASAP. Let me know the locations, pay, and start times.",
+          "timestamp": "2026-02-06T03:22:19.262Z"
+        },
+        {
+          "role": "agent",
+          "content": "Thanks for confirming everything! Our team will review your info for this shift and look into other opportunities you mentioned. They'll reach out soon. Any questions for me?",
+          "timestamp": "2026-02-06T03:22:32.032Z"
+        }
+      ],
+      "duration": 97375
+    },
+    {
+      "scenarioId": "todo-routing-preserves-shift-context",
+      "passed": false,
+      "criteria": [
+        {
+          "id": "responds-to-shift-question",
+          "passed": false,
+          "reason": "The agent did not provide the shift details (pay, location, hours) in response to the first shift inquiry and instead said they would review. Relevant shift information was only provided after the user reiterated."
+        },
+        {
+          "id": "no-confusing-topic-change",
+          "passed": true,
+          "reason": "The agent did not abruptly discuss reactivation or unrelated topics. It stayed focused on the offered shift details (pay, location, hours) and next steps, only prompting for questions related to the shift."
+        },
+        {
+          "id": "conversation-makes-sense",
+          "passed": true,
+          "reason": "The agent's replies consistently repeat the confirmed details (pay, location, hours) and explain the next steps (team will review and reach out). When the user asks for additional details (start date, OT, breaks, PPE), the agent similarly indicates those details will be covered. There are no contradictions or illogical jumps; the responses follow logically from the user's statements."
+        }
+      ],
+      "conversation": [
+        {
+          "role": "agent",
+          "content": "Hey! We have a shift available that might be a great fit for you. Interested?",
+          "timestamp": "2026-02-06T03:21:01.824Z"
+        },
+        {
+          "role": "user",
+          "content": "I'm in! Can you confirm the pay, location, and hours for the Fast Freight forklift operator shift? I’ve got $22/hr at Newark Distribution Hub, 6:00 AM–2:00 PM.",
+          "timestamp": "2026-02-06T03:21:07.697Z"
+        },
+        {
+          "role": "agent",
+          "content": "Thanks for confirming all the details! Our team will review your info and reach out soon if you're a match. Any questions in the meantime?",
+          "timestamp": "2026-02-06T03:21:14.109Z"
+        },
+        {
+          "role": "user",
+          "content": "Awesome, just to confirm: $22/hr, Newark Distribution Hub, 6:00 AM–2:00 PM—correct? Any other details I should know before I decide?",
+          "timestamp": "2026-02-06T03:21:22.103Z"
+        },
+        {
+          "role": "agent",
+          "content": "Yes, that's all correct: $22/hr at Newark Distribution Hub, 6 AM - 2 PM. Can you confirm how you'll get there on time?",
+          "timestamp": "2026-02-06T03:21:36.746Z"
+        },
+        {
+          "role": "user",
+          "content": "Yep, that's right—$22/hr at Newark Distribution Hub, 6:00 AM–2:00 PM. Any other details I should know before I decide?",
+          "timestamp": "2026-02-06T03:21:52.175Z"
+        },
+        {
+          "role": "agent",
+          "content": "Thanks for confirming the details again! Just to make sure, can you confirm how you'll get to Newark Distribution Hub on time?",
+          "timestamp": "2026-02-06T03:22:02.154Z"
+        },
+        {
+          "role": "user",
+          "content": "I'll drive and plan to be there by 5:45 to check in.",
+          "timestamp": "2026-02-06T03:22:09.704Z"
+        },
+        {
+          "role": "agent",
+          "content": "Thanks for confirming all the details! Our team will review your info and reach out soon if you're a match. Any questions in the meantime?",
+          "timestamp": "2026-02-06T03:22:18.803Z"
+        },
+        {
+          "role": "user",
+          "content": "Awesome—I'll drive and be there by 5:45 to check in. Any other details I should know before I decide (start date, OT, breaks, PPE)?",
+          "timestamp": "2026-02-06T03:22:33.073Z"
+        },
+        {
+          "role": "agent",
+          "content": "Thanks for confirming all that! Our team will review your info and reach out soon to cover those details like start date, OT, and breaks. Any other questions for me now?",
+          "timestamp": "2026-02-06T03:22:47.950Z"
+        },
+        {
+          "role": "user",
+          "content": "Awesome—I'm in. Can you confirm the start date, OT, break schedule, and what PPE I need to bring (boots, hi-vis, hard hat), plus any onboarding steps?",
+          "timestamp": "2026-02-06T03:22:54.400Z"
+        },
+        {
+          "role": "agent",
+          "content": "Fantastic! Our team will review your info and reach out shortly to confirm everything and go over details like start date, OT, breaks, PPE, and onboarding. Any other questions for me in the meantime?",
+          "timestamp": "2026-02-06T03:23:21.220Z"
+        }
+      ],
+      "duration": 163073
+    }
+  ],
+  "summary": {
+    "total": 11,
+    "passed": 10,
+    "failed": 1,
+    "duration": 192918
+  },
+  "timestamp": "2026-02-06T03:24:14.688Z"
+}
