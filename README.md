@@ -1,36 +1,44 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AI Scenario Viewer
+
+Visualize and compare AI scenario test results. Built with Vite, React, TypeScript, and Tailwind CSS.
+
+## Features
+
+- **Drag-and-drop loading** — drop a `latest.json` result file or use the bundled sample data
+- **Dashboard** — scenario and criteria pass rates, summary stats, filterable scenario grid
+- **Conversation viewer** — chat-bubble UI showing agent/user exchanges per scenario
+- **Evaluation criteria** — pass/fail table with expandable LLM evaluator reasons
+- **Multi-run comparison** — time series charts, scenario diff tables, and delta cards across uploads
+- **Dark mode** — toggle with system preference detection
+- **localStorage persistence** — results survive page refreshes and navigation, with history of past uploads
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Opens on [http://localhost:3456](http://localhost:3456).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Usage
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Run your AI scenario tests in `traba-server-node` to produce a `latest.json` result file
+2. Open the viewer and drag the JSON file onto the drop zone (or click "Load Sample Data")
+3. Click any scenario card to view the full conversation and evaluation criteria
+4. Upload multiple result files over time, then click "Compare Runs" to see trends and diffs
 
-## Learn More
+## Tech Stack
 
-To learn more about Next.js, take a look at the following resources:
+- [Vite](https://vite.dev) + [React](https://react.dev) + [TypeScript](https://www.typescriptlang.org)
+- [Tailwind CSS v4](https://tailwindcss.com)
+- [React Router v7](https://reactrouter.com)
+- Pure SVG charts (no charting library)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Scripts
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start dev server on port 3456 |
+| `npm run build` | Type-check and build for production |
+| `npm run preview` | Preview production build |
