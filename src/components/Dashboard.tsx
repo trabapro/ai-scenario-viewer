@@ -5,6 +5,8 @@ import type {
   FilterStatus,
   SortField,
   SortDirection,
+  ChangeStatus,
+  ChangeFilter,
 } from "@/types/scenario";
 import { formatFullTimestamp } from "@/lib/utils";
 import { useScenarioData } from "./ScenarioDataProvider";
@@ -17,10 +19,21 @@ interface DashboardProps {
   onReset: () => void;
 }
 
+const CHANGE_SORT_ORDER: Record<ChangeStatus, number> = {
+  regressed: 0,
+  fixed: 1,
+  new: 2,
+  "stable-fail": 3,
+  "stable-pass": 4,
+  removed: 5,
+  unknown: 6,
+};
+
 export function Dashboard({ data, onReset }: DashboardProps) {
-  const { history } = useScenarioData();
+  const { history, loadHistoryData } = useScenarioData();
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState<FilterStatus>("all");
+  const [changeFilter, setChangeFilter] = useState<ChangeFilter>("all");
   const [sortField, setSortField] = useState<SortField>("name");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
 
@@ -32,6 +45,52 @@ export function Dashboard({ data, onReset }: DashboardProps) {
       setSortDirection("asc");
     }
   };
+
+  // Compute change status map by comparing against previous run in history
+  const changeMap = useMemo(() => {
+    const map = new Map<string, ChangeStatus>();
+
+    // Find the previous run (second entry in history since first is current)
+    if (history.length < 2) return map;
+
+    const prevData = loadHistoryData(history[1].id);
+    if (!prevData) return map;
+
+    const prevMap = new Map<string, boolean>();
+    for (const r of prevData.results) {
+      prevMap.set(r.scenarioId, r.passed);
+    }
+
+    for (const r of data.results) {
+      const prevPassed = prevMap.get(r.scenarioId);
+      if (prevPassed === undefined) {
+        map.set(r.scenarioId, "new");
+      } else if (prevPassed && !r.passed) {
+        map.set(r.scenarioId, "regressed");
+      } else if (!prevPassed && r.passed) {
+        map.set(r.scenarioId, "fixed");
+      } else if (r.passed) {
+        map.set(r.scenarioId, "stable-pass");
+      } else {
+        map.set(r.scenarioId, "stable-fail");
+      }
+    }
+
+    return map;
+  }, [data.results, history, loadHistoryData]);
+
+  const hasChangeData = changeMap.size > 0;
+
+  // Count change statuses for filter badges
+  const changeCounts = useMemo(() => {
+    const counts = { regressed: 0, fixed: 0, new: 0 };
+    for (const status of changeMap.values()) {
+      if (status === "regressed") counts.regressed++;
+      else if (status === "fixed") counts.fixed++;
+      else if (status === "new") counts.new++;
+    }
+    return counts;
+  }, [changeMap]);
 
   const filteredAndSorted = useMemo(() => {
     let results = [...data.results];
@@ -49,6 +108,10 @@ export function Dashboard({ data, onReset }: DashboardProps) {
       results = results.filter((r) => !r.passed);
     }
 
+    if (changeFilter !== "all" && hasChangeData) {
+      results = results.filter((r) => changeMap.get(r.scenarioId) === changeFilter);
+    }
+
     results.sort((a, b) => {
       let comparison = 0;
       switch (sortField) {
@@ -61,12 +124,18 @@ export function Dashboard({ data, onReset }: DashboardProps) {
         case "status":
           comparison = Number(b.passed) - Number(a.passed);
           break;
+        case "change": {
+          const aStatus = changeMap.get(a.scenarioId) ?? "unknown";
+          const bStatus = changeMap.get(b.scenarioId) ?? "unknown";
+          comparison = CHANGE_SORT_ORDER[aStatus] - CHANGE_SORT_ORDER[bStatus];
+          break;
+        }
       }
       return sortDirection === "asc" ? comparison : -comparison;
     });
 
     return results;
-  }, [data.results, searchQuery, filterStatus, sortField, sortDirection]);
+  }, [data.results, searchQuery, filterStatus, changeFilter, sortField, sortDirection, changeMap, hasChangeData]);
 
   return (
     <div className="mx-auto max-w-[1600px] px-4 py-6 sm:px-6 lg:px-10 animate-fade-in">
@@ -103,6 +172,10 @@ export function Dashboard({ data, onReset }: DashboardProps) {
           onSearchChange={setSearchQuery}
           filterStatus={filterStatus}
           onFilterChange={setFilterStatus}
+          changeFilter={changeFilter}
+          onChangeFilterChange={setChangeFilter}
+          hasChangeData={hasChangeData}
+          changeCounts={changeCounts}
           sortField={sortField}
           sortDirection={sortDirection}
           onSortChange={handleSortChange}
@@ -117,6 +190,7 @@ export function Dashboard({ data, onReset }: DashboardProps) {
           <ScenarioCard
             key={scenario.scenarioId}
             scenario={scenario}
+            changeStatus={changeMap.get(scenario.scenarioId)}
           />
         ))}
       </div>

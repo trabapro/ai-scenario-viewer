@@ -57,9 +57,11 @@ export function ScenarioPage() {
     );
   }
 
+  const seedReport = data.seedReports?.find((r) => r.scenarioId === decodedId);
+
   return (
     <div className="mx-auto max-w-[1600px] px-4 py-6 sm:px-6 lg:px-10">
-      <ScenarioDetail scenario={scenario} />
+      <ScenarioDetail scenario={scenario} seedReport={seedReport} />
     </div>
   );
 }

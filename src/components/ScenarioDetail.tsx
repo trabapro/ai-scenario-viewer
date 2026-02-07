@@ -1,14 +1,17 @@
 import { useNavigate } from "react-router-dom";
-import type { ScenarioResult } from "@/types/scenario";
+import type { ScenarioResult, SeedReport } from "@/types/scenario";
 import { formatDuration, scenarioIdToTitle, getUserTurns } from "@/lib/utils";
 import { ConversationView } from "./ConversationView";
 import { CriteriaTable } from "./CriteriaTable";
+import { WebSocketEventsView } from "./WebSocketEventsView";
+import { SeedReportView } from "./SeedReportView";
 
 interface ScenarioDetailProps {
   scenario: ScenarioResult;
+  seedReport?: SeedReport;
 }
 
-export function ScenarioDetail({ scenario }: ScenarioDetailProps) {
+export function ScenarioDetail({ scenario, seedReport }: ScenarioDetailProps) {
   const navigate = useNavigate();
   const passedCriteria = scenario.criteria.filter((c) => c.passed).length;
   const totalCriteria = scenario.criteria.length;
@@ -78,6 +81,14 @@ export function ScenarioDetail({ scenario }: ScenarioDetailProps) {
           </div>
         </div>
       </div>
+
+      {/* WebSocket Events */}
+      {scenario.websocketEvents && scenario.websocketEvents.length > 0 && (
+        <WebSocketEventsView events={scenario.websocketEvents} />
+      )}
+
+      {/* Seed Report */}
+      {seedReport && <SeedReportView report={seedReport} />}
 
       {/* Metadata section if present */}
       {scenario.metadata && Object.keys(scenario.metadata).length > 0 && (

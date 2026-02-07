@@ -1,15 +1,32 @@
 import { Link } from "react-router-dom";
-import type { ScenarioResult } from "@/types/scenario";
+import type { ScenarioResult, ChangeStatus } from "@/types/scenario";
 import { formatDuration, scenarioIdToTitle, getUserTurns } from "@/lib/utils";
 
 interface ScenarioCardProps {
   scenario: ScenarioResult;
+  changeStatus?: ChangeStatus;
 }
 
-export function ScenarioCard({ scenario }: ScenarioCardProps) {
+const changeBadge: Record<string, { label: string; className: string }> = {
+  regressed: {
+    label: "Regressed",
+    className: "bg-failure/10 text-failure",
+  },
+  fixed: {
+    label: "Fixed",
+    className: "bg-success/10 text-success",
+  },
+  new: {
+    label: "New",
+    className: "bg-blue-500/10 text-blue-400",
+  },
+};
+
+export function ScenarioCard({ scenario, changeStatus }: ScenarioCardProps) {
   const passedCriteria = scenario.criteria.filter((c) => c.passed).length;
   const totalCriteria = scenario.criteria.length;
   const turns = getUserTurns(scenario.conversation);
+  const badge = changeStatus ? changeBadge[changeStatus] : undefined;
 
   return (
     <Link
@@ -18,9 +35,16 @@ export function ScenarioCard({ scenario }: ScenarioCardProps) {
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
-          <h3 className="font-medium text-sm leading-tight truncate">
-            {scenarioIdToTitle(scenario.scenarioId)}
-          </h3>
+          <div className="flex items-center gap-2">
+            <h3 className="font-medium text-sm leading-tight truncate">
+              {scenarioIdToTitle(scenario.scenarioId)}
+            </h3>
+            {badge && (
+              <span className={`shrink-0 text-[10px] font-medium px-1.5 py-0.5 rounded ${badge.className}`}>
+                {badge.label}
+              </span>
+            )}
+          </div>
         </div>
         <span
           className={`mt-0.5 h-2 w-2 shrink-0 rounded-full ${

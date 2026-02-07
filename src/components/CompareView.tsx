@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback } from "react";
 import { Link } from "react-router-dom";
 import type { HistoryEntry } from "@/components/ScenarioDataProvider";
-import type { ScenarioResults } from "@/types/scenario";
+import type { ScenarioResults, ChangeStatus } from "@/types/scenario";
 import { formatFullTimestamp, formatDuration, getPassRate } from "@/lib/utils";
 
 interface CompareViewProps {
@@ -13,8 +13,6 @@ interface LoadedRun {
   entry: HistoryEntry;
   data: ScenarioResults;
 }
-
-type ChangeStatus = "regressed" | "fixed" | "stable-pass" | "stable-fail" | "new" | "removed";
 
 export function CompareView({ history, loadHistoryData }: CompareViewProps) {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(
@@ -867,6 +865,7 @@ function ChangeStatusBadge({ status }: { status: ChangeStatus }) {
     "stable-fail": "text-failure/60",
     new: "text-foreground",
     removed: "text-muted-foreground",
+    unknown: "text-muted-foreground",
   };
 
   const labels: Record<ChangeStatus, string> = {
@@ -876,6 +875,7 @@ function ChangeStatusBadge({ status }: { status: ChangeStatus }) {
     "stable-fail": "Failing",
     new: "New",
     removed: "Removed",
+    unknown: "Unknown",
   };
 
   return (

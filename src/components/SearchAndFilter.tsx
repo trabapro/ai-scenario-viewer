@@ -1,10 +1,14 @@
-import type { FilterStatus, SortField, SortDirection } from "@/types/scenario";
+import type { FilterStatus, SortField, SortDirection, ChangeFilter } from "@/types/scenario";
 
 interface SearchAndFilterProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
   filterStatus: FilterStatus;
   onFilterChange: (status: FilterStatus) => void;
+  changeFilter: ChangeFilter;
+  onChangeFilterChange: (filter: ChangeFilter) => void;
+  hasChangeData: boolean;
+  changeCounts: { regressed: number; fixed: number; new: number };
   sortField: SortField;
   sortDirection: SortDirection;
   onSortChange: (field: SortField) => void;
@@ -17,6 +21,10 @@ export function SearchAndFilter({
   onSearchChange,
   filterStatus,
   onFilterChange,
+  changeFilter,
+  onChangeFilterChange,
+  hasChangeData,
+  changeCounts,
   sortField,
   sortDirection,
   onSortChange,
@@ -67,6 +75,45 @@ export function SearchAndFilter({
         </div>
       </div>
 
+      {/* Change filter row — only shown when previous run data exists */}
+      {hasChangeData && (
+        <div className="flex gap-1.5 flex-wrap">
+          {(["all", "regressed", "fixed", "new"] as ChangeFilter[]).map((filter) => {
+            const active = changeFilter === filter;
+            const count = filter === "all" ? null : changeCounts[filter];
+            const colorClass =
+              filter === "regressed"
+                ? active
+                  ? "bg-failure/10 text-failure border-failure/20"
+                  : "text-muted-foreground hover:text-failure border-card-border"
+                : filter === "fixed"
+                ? active
+                  ? "bg-success/10 text-success border-success/20"
+                  : "text-muted-foreground hover:text-success border-card-border"
+                : filter === "new"
+                ? active
+                  ? "bg-blue-500/10 text-blue-400 border-blue-500/20"
+                  : "text-muted-foreground hover:text-blue-400 border-card-border"
+                : active
+                ? "bg-muted text-foreground border-card-border"
+                : "text-muted-foreground hover:text-foreground border-card-border";
+
+            return (
+              <button
+                key={filter}
+                onClick={() => onChangeFilterChange(filter)}
+                className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-medium border transition-colors ${colorClass}`}
+              >
+                {filter === "all" ? "All changes" : filter === "regressed" ? "Regressed" : filter === "fixed" ? "Fixed" : "New"}
+                {count !== null && count > 0 && (
+                  <span className="font-mono tabular-nums opacity-70">{count}</span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
       <div className="flex items-center justify-between">
         <p className="text-xs text-muted-foreground tabular-nums">
           {filteredCount} of {totalCount}
@@ -74,7 +121,7 @@ export function SearchAndFilter({
 
         {/* Sort controls */}
         <div className="flex items-center gap-1">
-          {(["name", "duration", "status"] as SortField[]).map((field) => (
+          {(["name", "duration", "status", ...(hasChangeData ? ["change" as SortField] : [])] as SortField[]).map((field) => (
             <button
               key={field}
               onClick={() => onSortChange(field)}
@@ -84,7 +131,7 @@ export function SearchAndFilter({
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
-              {field === "name" ? "Name" : field === "duration" ? "Duration" : "Status"}
+              {field === "name" ? "Name" : field === "duration" ? "Duration" : field === "status" ? "Status" : "Change"}
               {sortField === field && (
                 <span className="ml-0.5">{sortDirection === "asc" ? "\u2191" : "\u2193"}</span>
               )}
