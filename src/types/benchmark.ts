@@ -1,4 +1,4 @@
-import type { ScenarioResults } from "./scenario";
+import type { Criterion, ScenarioResult, ScenarioResults } from "./scenario";
 
 export interface ModelResult {
   modelName: string;
@@ -72,6 +72,82 @@ export function modelNameToDisplay(name: string): string {
       return w.charAt(0).toUpperCase() + w.slice(1);
     })
     .join(" ");
+}
+
+/** Extract all unique judge model names from loaded results. */
+export function getJudgeModels(models: ModelResult[]): string[] {
+  const names = new Set<string>();
+  for (const model of models) {
+    for (const result of model.data.results) {
+      for (const criterion of result.criteria) {
+        if (criterion.modelEvaluations) {
+          for (const e of criterion.modelEvaluations) {
+            names.add(e.model);
+          }
+        }
+      }
+    }
+  }
+  return Array.from(names).sort();
+}
+
+/** Override criterion pass/fail using a single judge model's verdict.
+ *  Non-LLM criteria (without modelEvaluations) are left unchanged.
+ *  Scenario-level pass/fail is recalculated. */
+export function applyJudgePerspective(
+  models: ModelResult[],
+  judgeModel: string,
+): ModelResult[] {
+  return models.map((model) => ({
+    ...model,
+    data: applyJudgeToResults(model.data, judgeModel),
+  }));
+}
+
+function applyJudgeToCriterion(
+  criterion: Criterion,
+  judgeModel: string,
+): Criterion {
+  if (!criterion.modelEvaluations || criterion.modelEvaluations.length === 0) {
+    return criterion;
+  }
+  const judgeEval = criterion.modelEvaluations.find(
+    (e) => e.model === judgeModel,
+  );
+  if (!judgeEval) return criterion;
+  return {
+    ...criterion,
+    passed: judgeEval.passed,
+    reason: `[${judgeModel} only] ${judgeEval.reason}`,
+  };
+}
+
+function applyJudgeToScenario(
+  result: ScenarioResult,
+  judgeModel: string,
+): ScenarioResult {
+  const criteria = result.criteria.map((c) =>
+    applyJudgeToCriterion(c, judgeModel),
+  );
+  const passed = criteria.every((c) => c.passed);
+  return { ...result, passed, criteria };
+}
+
+function applyJudgeToResults(
+  data: ScenarioResults,
+  judgeModel: string,
+): ScenarioResults {
+  const results = data.results.map((r) => applyJudgeToScenario(r, judgeModel));
+  const passedCount = results.filter((r) => r.passed).length;
+  return {
+    ...data,
+    results,
+    summary: {
+      ...data.summary,
+      passed: passedCount,
+      failed: results.length - passedCount,
+    },
+  };
 }
 
 export function computeModelStats(model: ModelResult): ModelStats {
