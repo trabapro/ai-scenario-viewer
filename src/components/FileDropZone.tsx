@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, type DragEvent, type MouseEvent } from "react";
+import { useState, useCallback, useRef, type DragEvent } from "react";
 import type { ScenarioResults } from "@/types/scenario";
 import type { HistoryEntry } from "@/components/ScenarioDataProvider";
 import { formatFullTimestamp } from "@/lib/utils";
@@ -22,27 +22,7 @@ export function FileDropZone({
   const [error, setError] = useState<string | null>(null);
   const [loadedFiles, setLoadedFiles] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [loadingSample, setLoadingSample] = useState(false);
   const dragCounter = useRef(0);
-
-  const loadSampleData = useCallback(
-    async (e: MouseEvent) => {
-      e.stopPropagation();
-      setLoadingSample(true);
-      try {
-        const response = await fetch("/sample-data/latest.json");
-        if (!response.ok) throw new Error("Failed to fetch sample data");
-        const parsed = (await response.json()) as ScenarioResults;
-        onDataLoaded(parsed, "latest.json (sample)");
-        setError(null);
-      } catch {
-        setError("Failed to load sample data.");
-      } finally {
-        setLoadingSample(false);
-      }
-    },
-    [onDataLoaded]
-  );
 
   const processFile = useCallback(
     (file: File) => {
@@ -181,14 +161,7 @@ export function FileDropZone({
           </div>
         )}
 
-        <div className="mt-8 flex flex-col items-center gap-4">
-          <button
-            onClick={loadSampleData}
-            disabled={loadingSample}
-            className="text-sm font-medium text-foreground underline underline-offset-4 decoration-card-border hover:decoration-foreground transition-colors disabled:opacity-50"
-          >
-            {loadingSample ? "Loading..." : "Load sample data"}
-          </button>
+        <div className="mt-8 flex flex-col items-center">
           <p className="text-center text-xs text-muted-foreground">
             Expects <code className="font-mono text-foreground">latest.json</code> or <code className="font-mono text-foreground">ai-scenario-report.md</code>
           </p>
