@@ -1,10 +1,15 @@
-import { useMemo } from "react";
+import { useState, useMemo } from "react";
 import type { ModelResult, ModelStats } from "@/types/benchmark";
-import { computeModelStats } from "@/types/benchmark";
+import {
+  computeModelStats,
+  getJudgeModels,
+  applyJudgePerspective,
+} from "@/types/benchmark";
 import { ModelRankingTable } from "./ModelRankingTable";
 import { ScenarioHeatmap } from "./ScenarioHeatmap";
 import { TokenCostChart } from "./TokenCostChart";
 import { CriteriaFailureAnalysis } from "./CriteriaFailureAnalysis";
+import { JudgePerspectiveSelector } from "./JudgePerspectiveSelector";
 
 interface BenchmarkDashboardProps {
   models: ModelResult[];
@@ -15,29 +20,41 @@ export function BenchmarkDashboard({
   models,
   onReset,
 }: BenchmarkDashboardProps) {
+  const [selectedJudge, setSelectedJudge] = useState<string | null>(null);
+
+  const judgeModels = useMemo(() => getJudgeModels(models), [models]);
+
+  const effectiveModels = useMemo(
+    () =>
+      selectedJudge
+        ? applyJudgePerspective(models, selectedJudge)
+        : models,
+    [models, selectedJudge],
+  );
+
   const stats = useMemo(() => {
-    return models
+    return effectiveModels
       .map(computeModelStats)
       .sort((a, b) => b.scenarioPassRate - a.scenarioPassRate);
-  }, [models]);
+  }, [effectiveModels]);
 
   const totalScenarios = useMemo(() => {
     const ids = new Set<string>();
-    for (const m of models) {
+    for (const m of effectiveModels) {
       for (const r of m.data.results) ids.add(r.scenarioId);
     }
     return ids.size;
-  }, [models]);
+  }, [effectiveModels]);
 
   const totalCriteria = useMemo(() => {
     const ids = new Set<string>();
-    for (const m of models) {
+    for (const m of effectiveModels) {
       for (const r of m.data.results) {
         for (const c of r.criteria) ids.add(c.id);
       }
     }
     return ids.size;
-  }, [models]);
+  }, [effectiveModels]);
 
   const bestModel = stats[0];
   const worstModel = stats[stats.length - 1];
@@ -64,6 +81,17 @@ export function BenchmarkDashboard({
           </button>
         </div>
       </div>
+
+      {/* Judge perspective selector */}
+      {judgeModels.length > 0 && (
+        <div className="mb-4 border border-card-border bg-card px-4 py-2.5">
+          <JudgePerspectiveSelector
+            judgeModels={judgeModels}
+            selected={selectedJudge}
+            onChange={setSelectedJudge}
+          />
+        </div>
+      )}
 
       {/* Summary cards */}
       <div className="grid grid-cols-2 gap-px border border-card-border sm:grid-cols-4 mb-6">
@@ -106,12 +134,12 @@ export function BenchmarkDashboard({
 
       {/* Heatmap */}
       <section className="mb-6">
-        <ScenarioHeatmap models={models} stats={stats} />
+        <ScenarioHeatmap models={effectiveModels} stats={stats} />
       </section>
 
       {/* Criteria Analysis */}
       <section className="mb-6">
-        <CriteriaFailureAnalysis models={models} />
+        <CriteriaFailureAnalysis models={effectiveModels} />
       </section>
     </div>
   );
