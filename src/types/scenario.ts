@@ -41,10 +41,17 @@ export interface SeedReport {
   operations: SeedOperation[];
 }
 
+export interface ModelEvaluation {
+  model: string;
+  passed: boolean;
+  reason: string;
+}
+
 export interface Criterion {
   id: string;
   passed: boolean;
   reason: string;
+  modelEvaluations?: ModelEvaluation[];
 }
 
 export interface ScenarioResult {
