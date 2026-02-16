@@ -372,6 +372,21 @@ export function CrossModelScenarioView({
                             <span className="text-[11px] font-medium truncate">
                               {scenarioIdToTitle(c.id)}
                             </span>
+                            {/* Judge vote dots */}
+                            {c.modelEvaluations &&
+                              c.modelEvaluations.length > 0 && (
+                                <span className="flex gap-0.5 ml-auto shrink-0">
+                                  {c.modelEvaluations.map((e) => (
+                                    <span
+                                      key={e.model}
+                                      className={`h-1 w-1 rounded-full ${
+                                        e.passed ? "bg-success" : "bg-failure"
+                                      }`}
+                                      title={`${e.model}: ${e.passed ? "Pass" : "Fail"}`}
+                                    />
+                                  ))}
+                                </span>
+                              )}
                           </div>
                           {!c.passed && c.reason && (
                             <p className="text-[10px] text-muted-foreground leading-relaxed mt-0.5 ml-3">
@@ -479,6 +494,7 @@ function CriteriaMatrix({
                     const criterion = result?.criteria.find(
                       (c) => c.id === criterionId,
                     );
+                    const judges = criterion?.modelEvaluations;
                     return (
                       <td
                         key={model.modelName}
@@ -494,10 +510,38 @@ function CriteriaMatrix({
                           <span className="text-muted-foreground">
                             &mdash;
                           </span>
-                        ) : criterion.passed ? (
-                          <span className="text-success font-mono">Pass</span>
                         ) : (
-                          <span className="text-failure font-mono">Fail</span>
+                          <div className="flex flex-col items-center gap-0.5">
+                            <span
+                              className={`font-mono ${
+                                criterion.passed
+                                  ? "text-success"
+                                  : "text-failure"
+                              }`}
+                            >
+                              {criterion.passed ? "Pass" : "Fail"}
+                            </span>
+                            {judges && judges.length > 0 && (
+                              <span
+                                className="flex gap-0.5"
+                                title={judges
+                                  .map(
+                                    (e) =>
+                                      `${e.model}: ${e.passed ? "Pass" : "Fail"}`,
+                                  )
+                                  .join("\n")}
+                              >
+                                {judges.map((e) => (
+                                  <span
+                                    key={e.model}
+                                    className={`h-1 w-1 rounded-full ${
+                                      e.passed ? "bg-success" : "bg-failure"
+                                    }`}
+                                  />
+                                ))}
+                              </span>
+                            )}
+                          </div>
                         )}
                       </td>
                     );
