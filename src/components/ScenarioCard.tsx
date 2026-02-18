@@ -22,11 +22,19 @@ const changeBadge: Record<string, { label: string; className: string }> = {
   },
 };
 
+function getModelMode(scenario: ScenarioResult): string | undefined {
+  const agentMessage = scenario.conversation.find(
+    (m) => m.role === "agent" && m.modelMode,
+  );
+  return agentMessage?.modelMode;
+}
+
 export function ScenarioCard({ scenario, changeStatus }: ScenarioCardProps) {
   const passedCriteria = scenario.criteria.filter((c) => c.passed).length;
   const totalCriteria = scenario.criteria.length;
   const turns = getUserTurns(scenario.conversation);
   const badge = changeStatus ? changeBadge[changeStatus] : undefined;
+  const modelMode = getModelMode(scenario);
 
   return (
     <Link
@@ -62,6 +70,18 @@ export function ScenarioCard({ scenario, changeStatus }: ScenarioCardProps) {
         <span className={passedCriteria === totalCriteria ? "text-success" : "text-failure"}>
           {passedCriteria}/{totalCriteria}
         </span>
+        {modelMode && (
+          <>
+            <span className="mx-1.5 text-card-border">/</span>
+            <span className={`font-mono ${
+              modelMode === "tool_calling"
+                ? "text-amber-400"
+                : "text-cyan-400"
+            }`}>
+              {modelMode === "tool_calling" ? "tools" : "json"}
+            </span>
+          </>
+        )}
       </p>
 
       {/* Criteria mini-bar */}

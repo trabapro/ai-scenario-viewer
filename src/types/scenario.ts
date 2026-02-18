@@ -15,6 +15,7 @@ export interface ConversationMessage {
   timestamp: string;
   action?: string;
   topic?: string;
+  modelMode?: string;
   itemUpdates?: ItemUpdate[];
   todoUpdates?: TodoUpdate[];
   selectedShiftId?: string;

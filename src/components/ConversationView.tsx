@@ -28,6 +28,15 @@ export function ConversationView({ messages }: ConversationViewProps) {
                 >
                   {isAgent ? "Agent" : "User"}
                 </span>
+                {message.modelMode && (
+                  <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${
+                    message.modelMode === "tool_calling"
+                      ? "bg-amber-500/10 text-amber-400"
+                      : "bg-cyan-500/10 text-cyan-400"
+                  }`}>
+                    {message.modelMode === "tool_calling" ? "tools" : "json"}
+                  </span>
+                )}
                 {message.action && message.action !== "NONE" && (
                   <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-muted text-muted-foreground">
                     {message.action}
