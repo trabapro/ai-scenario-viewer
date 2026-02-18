@@ -9,6 +9,14 @@ export interface TodoUpdate {
   note?: string;
 }
 
+export interface ToolCall {
+  name: string;
+  args: Record<string, unknown>;
+  response?: Record<string, unknown>;
+  durationMs: number;
+  isTerminal: boolean;
+}
+
 export interface ConversationMessage {
   role: "agent" | "user";
   content: string;
@@ -19,6 +27,7 @@ export interface ConversationMessage {
   itemUpdates?: ItemUpdate[];
   todoUpdates?: TodoUpdate[];
   selectedShiftId?: string;
+  toolCalls?: ToolCall[];
 }
 
 export type ChangeStatus = "regressed" | "fixed" | "new" | "stable-pass" | "stable-fail" | "removed" | "unknown";

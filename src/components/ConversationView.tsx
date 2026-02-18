@@ -1,8 +1,88 @@
-import type { ConversationMessage } from "@/types/scenario";
+import { useState } from "react";
+import type { ConversationMessage, ToolCall } from "@/types/scenario";
 import { formatTimestamp } from "@/lib/utils";
 
 interface ConversationViewProps {
   messages: ConversationMessage[];
+}
+
+const TOOL_COLORS: Record<string, string> = {
+  search_help_center: "bg-blue-500/15 text-blue-400 border-blue-500/20",
+  take_shift_action: "bg-amber-500/15 text-amber-400 border-amber-500/20",
+  send_message: "bg-green-500/15 text-green-400 border-green-500/20",
+  update_todos: "bg-purple-500/15 text-purple-400 border-purple-500/20",
+  create_todos: "bg-purple-500/15 text-purple-400 border-purple-500/20",
+  update_checklist_items: "bg-cyan-500/15 text-cyan-400 border-cyan-500/20",
+};
+
+const DEFAULT_TOOL_COLOR = "bg-gray-500/15 text-gray-400 border-gray-500/20";
+
+function getToolColor(name: string): string {
+  return TOOL_COLORS[name] ?? DEFAULT_TOOL_COLOR;
+}
+
+function ToolCallCard({ call }: { call: ToolCall }) {
+  const [expanded, setExpanded] = useState(false);
+  const colorClasses = getToolColor(call.name);
+
+  return (
+    <div className={`border rounded px-2.5 py-1.5 text-[11px] font-mono ${colorClasses}`}>
+      <div
+        className="flex items-center gap-2 cursor-pointer select-none"
+        onClick={() => setExpanded(!expanded)}
+      >
+        <span className="text-[10px] opacity-60">{expanded ? "\u25BC" : "\u25B6"}</span>
+        <span className="font-semibold">{call.name}</span>
+        <span className="opacity-60">{call.durationMs}ms</span>
+        {call.isTerminal && (
+          <span className="text-[9px] px-1 py-0.5 rounded bg-white/10 opacity-70">terminal</span>
+        )}
+      </div>
+      {expanded && (
+        <div className="mt-1.5 space-y-1 text-[10px] opacity-80">
+          <div>
+            <span className="opacity-60">args: </span>
+            <pre className="inline whitespace-pre-wrap break-all">
+              {JSON.stringify(call.args, null, 2).slice(0, 500)}
+            </pre>
+          </div>
+          {call.response !== undefined && (
+            <div>
+              <span className="opacity-60">response: </span>
+              <pre className="inline whitespace-pre-wrap break-all">
+                {JSON.stringify(call.response, null, 2).slice(0, 500)}
+              </pre>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ToolCallsSection({ toolCalls }: { toolCalls: ToolCall[] }) {
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <div className="mt-1.5">
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="text-[10px] font-mono text-muted-foreground/60 hover:text-muted-foreground/80 transition-colors cursor-pointer"
+      >
+        {expanded ? "\u25BC" : "\u25B6"} {toolCalls.length} tool call{toolCalls.length !== 1 ? "s" : ""}
+        <span className="ml-1.5 opacity-60">
+          ({toolCalls.reduce((sum, c) => sum + c.durationMs, 0)}ms total)
+        </span>
+      </button>
+      {expanded && (
+        <div className="mt-1.5 space-y-1.5">
+          {toolCalls.map((call, i) => (
+            <ToolCallCard key={i} call={call} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
 }
 
 export function ConversationView({ messages }: ConversationViewProps) {
@@ -69,6 +149,11 @@ export function ConversationView({ messages }: ConversationViewProps) {
               >
                 <p className="whitespace-pre-wrap break-words">{message.content}</p>
               </div>
+
+              {/* Tool Calls */}
+              {message.toolCalls && message.toolCalls.length > 0 && (
+                <ToolCallsSection toolCalls={message.toolCalls} />
+              )}
 
               {/* Todo Updates */}
               {message.todoUpdates && message.todoUpdates.length > 0 && (
