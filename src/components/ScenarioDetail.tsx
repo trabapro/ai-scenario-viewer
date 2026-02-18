@@ -11,11 +11,21 @@ interface ScenarioDetailProps {
   seedReport?: SeedReport;
 }
 
+function getModelMode(scenario: ScenarioResult): string | undefined {
+  const agentMessage = scenario.conversation.find(
+    (m) => m.role === "agent" && m.modelMode,
+  );
+  return agentMessage?.modelMode;
+}
+
+const LANGFUSE_BASE_URL = "https://us.cloud.langfuse.com/trace/";
+
 export function ScenarioDetail({ scenario, seedReport }: ScenarioDetailProps) {
   const navigate = useNavigate();
   const passedCriteria = scenario.criteria.filter((c) => c.passed).length;
   const totalCriteria = scenario.criteria.length;
   const turns = getUserTurns(scenario.conversation);
+  const modelMode = getModelMode(scenario);
 
   return (
     <div className="animate-fade-in">
@@ -53,6 +63,15 @@ export function ScenarioDetail({ scenario, seedReport }: ScenarioDetailProps) {
           <span className={passedCriteria === totalCriteria ? "text-success" : "text-failure"}>
             {passedCriteria}/{totalCriteria} criteria
           </span>
+          {modelMode && (
+            <span className={`font-mono px-1.5 py-0.5 rounded ${
+              modelMode === "tool_calling"
+                ? "bg-amber-500/10 text-amber-400"
+                : "bg-cyan-500/10 text-cyan-400"
+            }`}>
+              {modelMode === "tool_calling" ? "tool calling" : "structured json"}
+            </span>
+          )}
         </div>
       </div>
 
@@ -81,6 +100,30 @@ export function ScenarioDetail({ scenario, seedReport }: ScenarioDetailProps) {
           </div>
         </div>
       </div>
+
+      {/* Langfuse Traces */}
+      {scenario.langfuseTraceIds && scenario.langfuseTraceIds.length > 0 && (
+        <div className="mt-8">
+          <h3 className="mb-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+            Langfuse Traces
+          </h3>
+          <div className="border border-card-border bg-card p-4">
+            <div className="flex flex-wrap gap-2">
+              {scenario.langfuseTraceIds.map((traceId) => (
+                <a
+                  key={traceId}
+                  href={`${LANGFUSE_BASE_URL}${traceId}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[11px] font-mono px-2 py-1 rounded border border-card-border bg-muted text-muted-foreground hover:text-foreground hover:border-foreground/20 transition-colors"
+                >
+                  {traceId.slice(0, 12)}...
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* WebSocket Events */}
       {scenario.websocketEvents && scenario.websocketEvents.length > 0 && (
